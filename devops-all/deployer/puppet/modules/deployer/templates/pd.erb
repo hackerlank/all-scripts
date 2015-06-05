@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+SSH_OPT="-oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"
+user=ec2-user
+genders=/home/ec2-user/.awstools/managed.genders
+port=38022
+key=/home/ec2-user/.awstools/keys/prod_rsa
+cmd=pd$1
+
+shift
+for p in $*; do
+        params="$params '$p'"
+done;
+ssh-agent bash -c "ssh-add $key; PDSH_SSH_ARGS_APPEND='$SSH_OPT -p$port' $cmd -Rssh -l $user -F $genders $params" 
+

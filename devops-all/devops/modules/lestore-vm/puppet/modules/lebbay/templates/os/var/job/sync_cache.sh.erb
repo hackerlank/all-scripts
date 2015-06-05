@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ -f /var/job/host_name.conf ]; then
+    source /var/job/host_name.conf
+fi
+
+id=${host_name: -1}
+hour=$(date +%H)
+cache_dir=<%=@remote_cache_dir%>
+appdir=<%=@appdir%>
+src="/opt/data1/cache-updater_var/${cache_dir}/repo/"
+dst="/opt/data1/${appdir}_cache/repo/"
+domain="<%=@cache_domain%>"
+
+case "$hour" in
+	20)
+	if [ "$id" == "1" ] || [ "$id" == "2" ]; then
+		rsync -az -e 'ssh -i /root/.ssh/aws.cms -p38022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+		    --delete --progress syncer@${domain}:${src} ${dst}
+	fi
+	;;
+	22)
+	if [ "$id" == "3" ] || [ "$id" == "4" ]; then
+		rsync -az -e 'ssh -i /root/.ssh/aws.cms -p38022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+		    --delete --progress syncer@${domain}:${src} ${dst}
+	fi
+	;;
+	00)
+	if [ "$id" == "5" ] || [ "$id" == "6" ]; then
+		rsync -az -e 'ssh -i /root/.ssh/aws.cms -p38022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+		    --delete --progress syncer@${domain}:${src} ${dst}
+	fi
+	;;
+	02)
+	if [ "$id" == "7" ] || [ "$id" == "8" ]; then
+		rsync -az -e 'ssh -i /root/.ssh/aws.cms -p38022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+		    --delete --progress syncer@${domain}:${src} ${dst}
+	fi
+	;;
+	04)
+	if [ "$id" == "9" ]; then
+		rsync -az -e 'ssh -i /root/.ssh/aws.cms -p38022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+		    --delete --progress syncer@${domain}:${src} ${dst}
+	fi
+	;;
+esac
+

@@ -1,0 +1,270 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+    "Description" : "Description for Zabbix Monitor Server",
+
+    "Parameters" : {
+        "StackShortName" : {
+            "Description" : "The Stage of this environment",
+            "Type" : "String",
+			"Default" : "Zabbix-0"
+        },
+        "InstanceType" : {
+            "Description" : "Type of EC2 instance to launch",
+            "Type" : "String",
+            "Default" : "t1.micro",
+            "AllowedValues" : [ "t1.micro", "m1.small", "m1.large", "m1.xlarge", "m2.xlarge",
+            "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge", "cc1.4xlarge"]
+        },
+        "SSHPort" : {
+            "Description" : "The TCP port for the SSH",
+            "Type" : "String",
+            "Default" : "38022"
+        },
+        "WebServerPort" : {
+            "Description" : "The TCP port for the Web Server",
+            "Type" : "String",
+            "Default" : "80"
+        },
+        "ZabbixServerPort" : {
+            "Description" : "The TCP port for Zabbix Server Monitor",
+            "Type" : "String",
+            "Default" : "10051"
+        },
+        "ZabbixAgentPort" : {
+            "Description" : "The TCP port for Zabbix Agent Monitor",
+            "Type" : "String",
+            "Default" : "10050"
+        },
+        "KeyName" : {
+            "Description" : "The EC2 Key Pair to allow SSH access to the instances",
+            "Type" : "String",
+            "Default" : "test_rsa",
+            "MinLength": "1",
+            "MaxLength": "64",
+            "AllowedPattern" : "[-_ a-zA-Z0-9\\.]*",
+            "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+        },
+        "DeployerSG" : {
+            "Description" : "The SecurityGroup that can ssh to VMs",
+            "Type" : "String",
+            "Default" : "lestore-devops-deployer"
+        },
+        "Deployer" : {
+            "Description" : "Who create me?",
+            "Type" : "String"
+        },
+        "MonitorSG" : {
+            "Description" : "The SecurityGroup that can monitor VMs",
+            "Type" : "String",
+            "Default" : "lestore-devops-monitor"
+        }
+    },
+
+    "Mappings" : {
+        "AWSInstanceType2Arch" : {
+            "t1.micro" : { "Arch" : "64" },
+            "m1.small" : { "Arch" : "64" }
+        },
+        "AWSRegionArch2AMI" : {
+            "us-east-1" : { "64" : "ami-aecd60c7" },
+			"us-west-1" : { "64" : "ami-7aba833f" },
+            "us-west-2" : { "64" : "ami-48da5578" },
+            "ap-southeast-1" : { "64" : "ami-b40d5ee6" },
+            "ap-northeast-1" : { "64" : "ami-c9562fc8" },
+            "eu-west-1" : { "64" : "ami-2918e35e" }
+        }
+    },
+
+    "Resources" : {
+        "CfnUser" : {
+            "Type" : "AWS::IAM::User",
+            "Properties" : {
+                "Path": "/",
+                "Policies": [{
+                    "PolicyName": "MonitorPolicy",
+                    "PolicyDocument": { "Statement":[
+                        {
+                            "Effect":"Allow",
+                            "Action":[
+                                "ec2:*Address",
+                                "ec2:AuthorizeSecurityGroupEgress",
+                                "ec2:AuthorizeSecurityGroupIngress",
+                                "ec2:*SecurityGroup",
+                                "ec2:CreateSnapshot",
+                                "ec2:*Tags",
+                                "ec2:*Volume",
+                                "ec2:Describe*",
+                                "ec2:*Instances"
+                            ],
+                            "Resource":"*"
+                        },{
+                            "Effect":"Allow",
+                            "Action":[
+                                "cloudformation:CreateStack",
+                                "cloudformation:UpdateStack",
+                                "cloudformation:DeleteStack",
+                                "cloudformation:DescribeStackResource",
+                                "cloudformation:DescribeStackResources",
+                                "cloudformation:DescribeStacks",
+                                "cloudformation:ListStackResources",
+                                "cloudformation:ListStacks",
+                                "cloudformation:ValidateTemplate"
+                            ],
+                            "Resource":"*"
+                        },{
+                            "Effect":"Allow",
+                            "Action":[
+                                "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                                "elasticloadbalancing:DescribeInstanceHealth",
+                                "elasticloadbalancing:DescribeLoadBalancers",
+                                "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                                "elasticloadbalancing:DisableAvailabilityZonesForLoadBalancer",
+                                "elasticloadbalancing:EnableAvailabilityZonesForLoadBalancer"
+                            ],
+                            "Resource":"*"
+                        },{
+                            "Effect":"Allow",
+                            "Action":[
+                                "iam:*User",
+                                "iam:*UserPolicy",
+                                "iam:*AccessKeys",
+                                "iam:*AccessKey"
+                            ],
+                            "Resource":"*"
+                        }
+                    ]}
+                }]
+            }
+        },
+
+        "HostKeys" : {
+            "Type" : "AWS::IAM::AccessKey",
+            "Properties" : {
+                "UserName" : {"Ref": "CfnUser"}
+            }
+        },
+
+        "NewMonitor" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" }, { "Ref" : "MonitorSG" } ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+                "InstanceType" : { "Ref" : "InstanceType" },
+                "BlockDeviceMappings" : [{"DeviceName" : "/dev/sda1", "Ebs" : { "VolumeSize" : "50" }}],
+                "Tags": [
+                    { "Key" : "Name", "Value": {"Fn::Join" : [ "-",[
+                                                   { "Ref" : "StackShortName" },
+                                                   "monitor"
+                                                ]]}
+                    },
+                    { "Key" : "stack-status", "Value": "down" },
+                    { "Key" : "lestore:apps", "Value": ",lestore-vm,lestore-ops,monitor," }
+                ],
+                "UserData" : { "Fn::Base64" : {
+                    "Fn::Join" : ["", [
+                    "#!/bin/bash -v\n",
+                    "\n",
+                    "echo -n ", {"Ref" : "StackShortName"},"-Monitor > /home/ec2-user/nodename\n",
+                    "#config ssh\n",
+                    "cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orgbak\n",
+                    "sed -i '$a\\\\nPort ", { "Ref" : "SSHPort" }, "' /etc/ssh/sshd_config\n",
+                    "sudo bash -c 'echo Defaults:ec2-user \\!requiretty >> /etc/sudoers'\n",
+                    "service sshd restart\n",
+                    "#cfn-signal\n",
+                    "yum update -y aws-cfn-bootstrap\n",
+                    "mkdir -p /home/ec2-user/.awstools/keys\n",
+                    "echo AWSAccessKeyId=", { "Ref" : "HostKeys" },
+                    " >> /home/ec2-user/.awstools/lestore-devops-credentials.txt\n",
+                    "echo AWSSecretKey=", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                    " >> /home/ec2-user/.awstools/lestore-devops-credentials.txt\n",
+                    "echo export AWS_ACCESS_KEY=", { "Ref" : "HostKeys" },
+                    " >> /home/ec2-user/.bashrc\n",
+                    "echo export AWS_SECRET_KEY=", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                    " >> /home/ec2-user/.bashrc\n",
+                    "echo export AWS_CREDENTIAL_FILE=",
+                    "\"/home/ec2-user/.awstools/lestore-devops-credentials.txt\"",
+                    " >> /home/ec2-user/.bashrc\n",
+                    "chown -R ec2-user:ec2-user /home/ec2-user/.awstools\n",
+                    "# Helper function\n",
+                    "function error_exit\n",
+                    "{\n",
+                    " /opt/aws/bin/cfn-signal -e 1 -r \"$1\" '", { "Ref" : "MonitorWaitHandle"}, "'\n",
+                    " exit 1\n",
+                    "}\n",
+                    "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r NewMonitor ",
+                    " --access-key ", { "Ref" : "HostKeys" },
+                    " --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                    " --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+                    "# All is well so signal success\n",
+                    "/opt/aws/bin/cfn-signal -e 0 -r \"NewMonitor setup complete\" '", {"Ref" : "MonitorWaitHandle" }, "'\n"
+                        ]]
+                }}
+            },
+
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "config" : {
+                        "packages" : {
+                            "yum" : {
+                                "dos2unix" : [],
+                                "puppet" : [],
+                                "make" : [],
+                                "git" : []
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "MonitorWaitHandle" : {
+            "Type" : "AWS::CloudFormation::WaitConditionHandle"
+        },
+
+        "MonitorWaitCondition" : {
+            "Type" : "AWS::CloudFormation::WaitCondition",
+            "DependsOn" : "NewMonitor",
+            "Properties" : {
+                "Handle" : {"Ref" : "MonitorWaitHandle"},
+                "Timeout" : "600"
+            }
+        },
+
+        "InstanceSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Enable access",
+                "SecurityGroupIngress" : [ {
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "ZabbixServerPort" },
+                    "ToPort" : { "Ref" : "ZabbixServerPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "ZabbixAgentPort" },
+                    "ToPort" : { "Ref" : "ZabbixAgentPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "WebServerPort" },
+                    "ToPort" : { "Ref" : "WebServerPort" },
+                    "CidrIp" : "0.0.0.0/0"
+                }]
+            }
+        }
+    },
+
+    "Outputs" : {
+        "StackShortName" : {
+            "Description" : "The stage of this stack.",
+            "Value" : { "Ref" : "StackShortName" }
+        }
+    }
+}
+

@@ -1,0 +1,68 @@
+#!/bin/bash
+# chkconfig: - 85 15
+# description: dante sockd server
+
+NAME=sockd
+CMD=/usr/local/sbin/sockd
+CONF=/var/jenkins/.dante/sockd.conf
+PID=/var/jenkins/.dante/sockd.pid
+
+function start(){
+        $CMD -D -f $CONF -p $PID
+}
+
+function stop(){
+        kill $(cat $PID)
+}
+
+function reload(){
+        kill -SIGHUP $(cat $PID)
+}
+
+function status(){
+        kill -l SIGUSR1 > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+                kill -SIGUSR1 $(cat $PID)
+        else
+                kill -SIGINFO $(cat $PID)
+        fi
+}
+
+set -e
+
+case "$1" in
+  start)
+        echo -n "Starting $NAME: "
+        start
+        echo "done."
+        ;;
+  stop)
+        echo -n "Stopping $NAME: "
+        stop
+        echo "done."
+        ;;
+  restart|force-reload)
+        echo -n "Restarting $NAME: "
+        stop
+        sleep 1
+        start
+        echo "done."
+        ;;
+  reload)
+        echo -n "Reloading $NAME configuration: "
+        reload
+        echo "done."
+      ;;
+  status)
+        echo -n "Status of $NAME: "
+        status
+        echo "done."
+      ;;
+  *)
+        echo "Usage: $0 {start|stop|reload|status|restart|force-reload}" >&2
+        exit 1
+      ;;
+esac
+
+exit 0
+

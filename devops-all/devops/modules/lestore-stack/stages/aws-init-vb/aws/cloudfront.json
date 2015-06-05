@@ -1,0 +1,71 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "AWS CloudFormation Sample Template for Cloudfront.",
+
+  "Parameters" : {
+	  "LoadBalancer" : {
+	     "Description" : "The loadbalancer url",
+	     "Type" : "String"
+	  },
+
+	  "S3Bucket" : {
+	     "Description" : "The S3 bucket url",
+	     "Type" : "String"
+	  }
+  },
+
+  "Resources" : {
+	    "GoodsGalleryCDN1" : {
+
+	      "Type" : "AWS::CloudFront::Distribution",
+	      "Properties" : {
+		 "DistributionConfig" : {
+		   "S3Origin" : {"DNSName": { "Ref" : "S3Bucket" }},       
+		   "Enabled" : "true"
+		 }
+	      }
+	    },
+
+	    "GoodsGalleryCDN2" : {
+
+	      "Type" : "AWS::CloudFront::Distribution",
+	      "Properties" : {
+		 "DistributionConfig" : {
+		   "S3Origin" : {"DNSName": { "Ref" : "S3Bucket" }},       
+		   "Enabled" : "true"
+		 }
+	      }
+	    },
+
+
+	    "SiteResources" : {
+ 		   "Type": "AWS::CloudFront::Distribution",
+ 		   "Properties": {
+ 		       "DistributionConfig": {
+ 		           "Origins": [
+ 		               {
+ 		                   "DomainName": { "Ref" : "LoadBalancer" },
+ 		                   "Id": "SiteResources",
+ 		                   "CustomOriginConfig": {
+ 		                       "HTTPPort": "80",
+ 		                       "HTTPSPort": "443",
+ 		                       "OriginProtocolPolicy": "http-only"
+ 		                   }
+ 		               }
+ 		           ],
+ 		           "Enabled": "true",
+ 		           "Comment": "Somecomment",
+ 		           "DefaultRootObject": "index.html",
+ 		           "DefaultCacheBehavior": {
+ 		               "TargetOriginId": "SiteResources",
+ 		               "ForwardedValues": {
+ 		                   "QueryString": "false"
+ 		               },
+ 		               "ViewerProtocolPolicy": "allow-all"
+ 		           }
+ 		       }
+ 		   }
+       	    }
+   }
+}

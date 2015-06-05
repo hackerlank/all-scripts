@@ -1,0 +1,4 @@
+Use ssh-agent, ssh-add to prepare VM access for deployer
+Set SSH_AGENT_PID and SSH_AUTH_SOCK at app.deploy task for the deployer
+Set stack_access to <key file> at app.deploy task for the deployer
+Set the KeyName in stack description (awscf.stack.json) to your <key name>

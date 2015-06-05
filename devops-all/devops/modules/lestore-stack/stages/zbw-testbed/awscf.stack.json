@@ -1,0 +1,294 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+    "Description" : "Create an EC2 instance running the Amazon Linux 64 bit AMI. The AMI is chosen based on the region in which the stack is run. This example creates an EC2 security group for the instance to give you SSH access. **WARNING** This template creates one or more Amazon EC2 instances. You will be billed for the AWS resources used if you create a stack from this template.",
+
+    "Parameters" : {
+        "StackFullName" : {
+            "Description" : "The Stage of this environment",
+            "Type" : "String"
+        },
+        "SearchType" : {
+            "Description" : "Type of EC2 instance to launch",
+            "Type" : "String",
+            "Default" : "m1.small",
+            "AllowedValues" : [ "t1.micro", "m1.small", "m1.large", "m1.xlarge", "m2.xlarge", 
+            "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge", "cc1.4xlarge"]
+        },
+        "DBType" : {
+            "Description" : "Type of EC2 instance to launch",
+            "Type" : "String",
+            "Default" : "m1.small",
+            "AllowedValues" : [ "t1.micro", "m1.small", "m1.large", "m1.xlarge", "m2.xlarge", 
+            "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge", "cc1.4xlarge"]
+        },
+        "SSHPort" : {
+            "Description" : "The TCP port for the SSH",
+            "Type" : "String",
+            "Default" : "38022"
+        },
+        "WebServerPort" : {
+            "Description" : "The TCP port for the Web Server",
+            "Type" : "String",
+            "Default" : "80"
+        },
+        "DBPort" : {
+            "Description" : "The TCP port for DB",
+            "Type" : "String",
+            "Default" : "3306"
+        },
+        "SearchServerPort" : {
+            "Description" : "The TCP port for the Search Server",
+            "Type" : "String",
+            "Default" : "38080"
+        },
+        "NRPEPort" : {
+            "Description" : "The TCP port for NRPE Monitor",
+            "Type" : "String",
+            "Default" : "5666"
+        },
+        "KeyName" : {
+            "Description" : "The EC2 Key Pair to allow SSH access to the instances",
+            "Type" : "String",
+            "Default" : "stack.test",
+            "MinLength": "1",
+            "MaxLength": "64",
+            "AllowedPattern" : "[-_ a-zA-Z0-9\\.]*",
+            "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+        },
+        "Deployer" : {
+            "Description" : "The public hostname of the Deployer",
+            "Type" : "String"
+        },
+        "TestbedIncomingSG" : {
+            "Description" : "The SecurityGroup that can access testbed",
+            "Type" : "String",
+            "Default" : "lestore-testbed"
+        },
+        "DeployerSG" : {
+            "Description" : "The SecurityGroup that can ssh to VMs",
+            "Type" : "String",
+            "Default" : "lestore-devops-deployer"
+        },
+        "MonitorSG" : {
+            "Description" : "The SecurityGroup that can monitor VMs",
+            "Type" : "String",
+            "Default" : "lestore-devops-monitor"
+        },
+        "Monitor" : {
+            "Description" : "The address of NRPE Monitor",
+            "Type" : "String",
+            "Default" : "localhost"
+        }
+    },
+
+    "Mappings" : {
+        "AWSInstanceType2Arch" : {
+            "t1.micro" : { "Arch" : "64" },
+            "m1.small" : { "Arch" : "64" }
+        },
+        "AWSRegionArch2AMI" : {
+            "us-east-1" : { "64" : "ami-aecd60c7" },
+            "us-west-2" : { "64" : "ami-48da5578" }
+        }
+    },
+
+    "Resources" : {
+        "CfnUser" : {
+            "Type" : "AWS::IAM::User",
+            "Properties" : {
+                "Path": "/",
+                "Policies": [{
+                    "PolicyName": "root",
+                    "PolicyDocument": { "Statement":[{
+                        "Effect":"Allow",
+                        "Action":"cloudformation:DescribeStackResource",
+                        "Resource":"*"
+                    }]}
+                }]
+            }
+        },
+
+        "HostKeys" : {
+            "Type" : "AWS::IAM::AccessKey",
+            "Properties" : {
+                "UserName" : {"Ref": "CfnUser"}
+            }
+        },
+
+        "LeStoreSearchJJS" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" }, { "Ref" : "TestbedIncomingSG" } ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "SearchType" }, "Arch" ] } ] },
+                "InstanceType" : { "Ref" : "SearchType" },
+                "BlockDeviceMappings" : [{"DeviceName" : "/dev/sda1", "Ebs" : { "VolumeSize" : "20" }}],
+                "Tags": [
+                    { "Key" : "Name", "Value": {"Fn::Join" : [ "-", [ 
+                                                   { "Ref" : "StackFullName" }, 
+                                                   "searchjjs" ]]}
+                    },
+                    { "Key" : "stack-status", "Value": "test" },
+                    { "Key" : "lestore:apps", "Value": ",lestore-vm,memcached,lestore-search," }
+                ],
+                "UserData" : { "Fn::Base64" : { 
+                    "Fn::Join" : ["", [
+                    "#!/bin/bash -v\n",
+                    "\n",
+                    "echo -n LeStoreSearchJJS > /home/ec2-user/git.nodename\n",
+                    "echo -n JJsHouse > /home/ec2-user/search.Domain\n",
+                    "cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orgbak\n",
+                    "sed -i '$a\\\\nPort ", { "Ref" : "SSHPort" }, "' /etc/ssh/sshd_config\n",
+                    "service sshd restart\n",
+                    "yum update -y aws-cfn-bootstrap\n",
+                    "# Helper function\n",
+                    "function error_exit\n",
+                    "{\n",
+                    " /opt/aws/bin/cfn-signal -e 1 -r \"$1\" '", { "Ref" : "LeStoreSearchJJSWaitHandle"}, "'\n",
+                    " exit 1\n",
+                    "}\n",
+                    "# Install LAMP packages\n",
+                    "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r LeStoreSearchJJS ",
+                    " --access-key ", { "Ref" : "HostKeys" },
+                    " --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                    " --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+                    "# All is well so signal success\n",
+                    "/opt/aws/bin/cfn-signal -e 0 -r \"LeStoreSearchJJS setup complete\" '", {"Ref" : "LeStoreSearchJJSWaitHandle" }, "'\n"
+                        ]]
+                }} 
+            },
+
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "config" : {
+                        "packages" : {
+                            "yum" : {
+                                "dos2unix" : [],
+                                "puppet" : [],
+                                "make" : [],
+                                "git" : []
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "LeStoreSearchJJSWaitHandle" : {
+            "Type" : "AWS::CloudFormation::WaitConditionHandle"
+        },
+        "LeStoreSearchJJSWaitCondition" : {
+            "Type" : "AWS::CloudFormation::WaitCondition",
+            "DependsOn" : "LeStoreSearchJJS",
+            "Properties" : {
+                "Handle" : {"Ref" : "LeStoreSearchJJSWaitHandle"},
+                "Timeout" : "300"
+            }
+        },
+
+
+        "LeStoreDB" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" }, { "Ref" : "TestbedIncomingSG" } ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "DBType" }, "Arch" ] } ] },
+                "InstanceType" : { "Ref" : "DBType" },
+                "Tags": [
+                    { "Key" : "Name", "Value": {"Fn::Join" : [ "-", [ 
+                                                   { "Ref" : "StackFullName" }, 
+                                                   "db" ]]}
+                    },
+                    { "Key" : "stack-status", "Value": "test" },
+                    { "Key" : "lestore:apps", "Value": ",lestore-vm,lestore-db," }
+                ],
+                "UserData" : { "Fn::Base64" : { 
+                    "Fn::Join" : ["", [
+                        "#!/bin/bash -v\n",
+                    "\n",
+                    "echo -n LeStoreDB > /home/ec2-user/git.nodename\n",
+                    "cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orgbak\n",
+                    "echo 'Port ", { "Ref" : "SSHPort" }, "' >> /etc/ssh/sshd_config\n",
+                    "service sshd restart\n",
+                    "yum update -y aws-cfn-bootstrap\n",
+                    "# Helper function\n",
+                    "function error_exit\n",
+                    "{\n",
+                    " /opt/aws/bin/cfn-signal -e 1 -r \"$1\" '", { "Ref" : "LeStoreDBWaitHandle"}, "'\n",
+                    " exit 1\n",
+                    "}\n",
+                    "# Install LAMP packages\n",
+                    "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r LeStoreDB ",
+                    " --access-key ", { "Ref" : "HostKeys" },
+                    " --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                    " --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+                    "# All is well so signal success\n",
+                    "/opt/aws/bin/cfn-signal -e 0 -r \"LeStoreDB setup complete\" '", {"Ref" : "LeStoreDBWaitHandle" }, "'\n"
+                        ]]
+                }} 
+            },
+
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "config" : {
+                        "packages" : {
+                            "yum" : {
+                                "dos2unix" : [],
+                                "puppet" : [],
+                                "make" : []
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "LeStoreDBWaitHandle" : {
+            "Type" : "AWS::CloudFormation::WaitConditionHandle"
+        },
+
+        "LeStoreDBWaitCondition" : {
+            "Type" : "AWS::CloudFormation::WaitCondition",
+            "DependsOn" : "LeStoreDB",
+            "Properties" : {
+                "Handle" : {"Ref" : "LeStoreDBWaitHandle"},
+                "Timeout" : "1000"
+            }
+        },
+
+        "InstanceSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Enable access",
+                "SecurityGroupIngress" : [ {
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "DeployerSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "NRPEPort" },
+                    "ToPort" : { "Ref" : "NRPEPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SearchServerPort" },
+                    "ToPort" : { "Ref" : "SearchServerPort" },
+                    "CidrIp" : "0.0.0.0/0"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "DBPort" },
+                    "ToPort" : { "Ref" : "DBPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "TestbedIncomingSG" }
+                }]
+            }
+        }
+    },
+
+    "Outputs" : {
+        "StackFullName" : {
+            "Description" : "The stage of this stack.",
+            "Value" : { "Ref" : "StackFullName" }
+        }
+    }
+}
+

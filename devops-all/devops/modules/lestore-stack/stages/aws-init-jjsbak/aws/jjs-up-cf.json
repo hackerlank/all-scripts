@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetCloudFrontOriginAccessIdentity",
+        "cloudfront:GetCloudFrontOriginAccessIdentityConfig",
+        "cloudfront:GetDistribution",
+        "cloudfront:GetDistributionConfig",
+        "cloudfront:GetInvalidation",
+        "cloudfront:GetStreamingDistribution",
+        "cloudfront:GetStreamingDistributionConfig",
+        "cloudfront:ListCloudFrontOriginAccessIdentities",
+        "cloudfront:ListDistributions",
+        "cloudfront:ListInvalidations",
+        "cloudfront:ListStreamingDistributions"
+      ],
+      "Sid": "Stmt1372060376000",
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow"
+    }
+  ]
+}

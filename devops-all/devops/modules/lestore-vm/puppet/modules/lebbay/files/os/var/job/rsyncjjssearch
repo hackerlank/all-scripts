@@ -1,0 +1,55 @@
+#!/bin/bash
+source $(dirname $0)/config_moni.conf
+now=$(date +%Y%m%d%T)
+
+if [[ -z $name ]]
+then
+        name=${0#*rsync}
+fi
+
+rsynccode() {
+        echo $now $name
+        echo $md5
+        #/usr/bin/rsync -vzrtopg -e "ssh -p32005" --progress --delete syncer@$test_server:/var/data/$name.tar.gz /opt/data1/code
+        /usr/bin/rsync -vzrtopg --progress --delete product@$test_server::data/$name.tar.gz /opt/data1/code --password-file=/etc/rsync.pwd
+        echo
+}
+
+cd /tmp
+if [ -f "over$name" ]
+then
+        echo $now $name
+        check_md5=$(cat /tmp/over$name)
+        rm -rf /tmp/over$name
+        rm -rf /tmp/$name.tar.gz /tmp/$name
+
+        /usr/bin/rsync -vzrtopg -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress --delete syncer@$local_server:/opt/data1/code/$name.tar.gz /tmp 
+
+        cd /tmp
+        file_md5=$(md5sum $name.tar.gz|awk '{print $1}')
+        if [[ $check_md5 != $file_md5 ]]
+        then
+                echo "file md5 error"
+                exit
+        fi
+
+        tar xzf $name.tar.gz
+
+        if [[ $? -ne 0 ]]
+        then
+                echo "file rsync error"
+                exit
+        fi
+
+        /usr/bin/rsync -vzrtopg --progress --delete --exclude "application.properties" --exclude "servlet-api.jar" /tmp/$name/ /var/www/http/$name 
+        sleep 2
+        /etc/init.d/tomcat6 restart
+
+        echo
+        rm -rf /tmp/$name.tar.gz /tmp/$name
+        version=$(cat /var/www/http/$name/version)
+        cd /opt/data1/code/backup
+        cp /opt/data1/code/$name.tar.gz /opt/data1/code/backup/${name}_${version}.tar.gz
+        ls /opt/data1/code/backup/ -lt|grep .tar.gz|grep ${name}_[0-9]|awk '{if(NR>5){print $9}}'|xargs rm -rf
+
+fi

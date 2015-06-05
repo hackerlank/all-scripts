@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# work 16 hours per day (0~15)
+# 256 level1 folders (00~FF) splited into 3 days
+# 6 level1 folders in one hour
+Num1=3
+Num2=6
+<% if @num1 %>
+Num1=<%= @num1 %>
+<% end %>
+<% if @num2 %>
+Num2=<%= @num2 %>
+<% end %>
+
+function l1(){
+    day=$(($1 % $Num1))
+    hour=$2
+    if [ $hour -gt 15 ]; then
+        printf 'NULL';
+        return
+    fi
+    hour=$((16 * $day + $hour))
+    min=$3
+    step=$(($min/10))
+
+    l1=$(($hour * $Num2 + $step))
+    if [ $l1 -gt 255 ]; then
+        printf 'NULL';
+        return;
+    fi;
+    printf '%.2x\n' $l1
+    #echo "obase=16;$l1" | bc
+}
+
+# 256 level2 folders (00~FF) splited into 10 minutes
+# work 8 minutes in 10
+# 32 level2 folders per minute
+function l2(){
+    min=$1
+    point=$(($min%10))
+    if [ $(($point/8)) -eq 1 ]; then
+        printf 'NULL';
+        return;
+    fi;
+
+    l2=$((2 * ($point % 8)))
+    printf '%.1x*\n' $l2 
+    printf '%.1x*\n' $(($l2+1))
+}
+
+day=$(date +%w | bc)
+hour=$(date +%H | bc)
+min=$(date +%M | bc)
+
+#test
+#for day in $(seq 0 6); do
+#    if [ $day -eq 6 ]; then
+#        continue;
+#    fi
+#    for hour in $(seq 0 23); do
+#        for min in $(seq 0 59); do
+#            path=$(l1 $day $hour $min)/$(l2 $min)
+#            t=$(echo $path | grep 'NULL')
+#            if [ "$?" -ne 0 ]; then
+#                echo $(l1 $day $hour $min)/$(l2 $min)
+#            fi
+#        done;
+#    done;
+#done;
+#exit
+
+
+NGINX="/opt/data1/nginxproxycache/proxy_cache_dir"
+TAR="/tmp/delete_cache_list"
+
+PROJECT="<%= @appdir%>"
+CACHE="/var/www/http/${PROJECT}/templates/caches"
+
+
+if [ "$1" = "force" ]; then
+    if [ -e "${CACHE}" ]; then
+        find ${CACHE}/ -type f -mtime +1 -exec rm -f {} \; 2>/dev/null
+    fi
+else
+    if [ $day -eq 0 ]; then
+        #rest at Sunday
+        exit 0;
+    fi
+    for l in $(l2 $min); do
+        path=$(l1 $day $hour $min)/$l
+        t=$(echo $path | grep 'NULL')
+        if [ "$?" -ne 0 ]; then
+            ls -d "${NGINX}/${path}" >> $TAR
+            if [ -e "${CACHE}" ]; then
+                find ${CACHE}/${path}/ -mindepth 1 -maxdepth 1 -type f -mtime +2 -exec rm -f {} \; 2>/dev/null
+            fi
+        fi
+    done;
+fi

@@ -1,0 +1,10 @@
+
+	"Node@@##FrontEnd##@@" : {
+            "Description" : "",
+            "Value" : {"Fn::Join" : [ ":", [
+                    { "Ref" : "@@##FrontEnd##@@" }, 
+                    { "Fn::GetAtt" : [ "@@##FrontEnd##@@", "PublicDnsName" ] }, 
+                    ",lestore-vm,esmeralda-editor,lestore-ops,monitor.front,frontend,"
+                ]]
+            }
+        }

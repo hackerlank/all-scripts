@@ -1,0 +1,27 @@
+#! /bin/bash
+
+
+test_file=/var/job/test_file
+pid_file=/opt/data1/nginxlogs/nginx.pid
+rm -rf $test_file
+echo "a" > $test_file
+if [[ ! -f $test_file ]]
+then
+    /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-1'\
+        "AWS Alert: disk can not write" "Level: Sev-1 \nInfo: disk can not write."
+fi
+rm -rf $test_file
+
+if [[ ! -f $pid_file ]]
+then
+        nginx_pid=`ps aux|grep -v "grep" |grep "nginx: master process"|awk '{print $2}'`
+        if [[ ! -z $nginx_pid ]]
+        then
+                echo $nginx_pid > /opt/data1/nginxlogs/nginx.pid
+                /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-2'\
+		            "AWS Alert: nginx pid file lost." "Level: Sev-2 \nInfo: nginx pid file lost."
+        else
+                /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-1'\
+		            "AWS Alert: nginx pid file lost." "Level: Sev-1 \nInfo: nginx pid file lost."
+	fi
+fi

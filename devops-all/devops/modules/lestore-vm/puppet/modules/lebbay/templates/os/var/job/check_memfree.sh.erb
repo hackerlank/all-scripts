@@ -1,0 +1,15 @@
+#!/bin/bash
+
+level="Sev-2"
+flag=80
+#mem_used=`free | awk '/Mem/{print int(100-(($4+$6+$7)/$2*100))}'`
+swap_used=`free | awk '/Swap/{print int($3/$2*100)}'`
+
+echo "run at $(date +'%Y-%m-%d %T')" >> /var/log/monitor/check_memfree.$(date +\%Y\%m\%d).log 2>&1
+/usr/bin/free -m >> /var/log/monitor/check_memfree.$(date +\%Y\%m\%d).log 2>&1
+
+if [ $swap_used -ge $flag ]
+then
+    /var/job/alert.sh <%=@test?'test':'prod'%> $level \
+        "AWS Alert: swap memory is critical" "Level: $level \nInfo: swap memory used $swap_used%"
+fi

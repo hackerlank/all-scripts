@@ -1,0 +1,130 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+    "Description" : "initialize aws account",
+
+    "Parameters" : {
+        "SSHPort" : {
+            "Description" : "The TCP port for the SSH",
+            "Type" : "String",
+            "Default" : "38022"
+        },
+        "BBCPPortStart" : {
+            "Description" : "The TCP port for the BBCP",
+            "Type" : "String",
+            "Default" : "39000"
+        },
+        "BBCPPortEnd" : {
+            "Description" : "The TCP port for the BBCP",
+            "Type" : "String",
+            "Default" : "39010"
+        },
+        "NRPEPort" : {
+            "Description" : "The TCP port for NRPE Monitor",
+            "Type" : "String",
+            "Default" : "5666"
+        },
+        "MonitorSG" : {
+            "Description" : "The SecurityGroup that can monitor VMs",
+            "Type" : "String",
+            "Default" : "DevOpsMonitorSG"
+        },
+        "AdminAccess" : {
+            "Description" : "The ip of admin that could access deployer and testbed",
+            "Type" : "String",
+            "Default" : "118.242.38.78/32"
+        }
+    },
+
+    "Resources" : {
+        "DevOpsMonitorSG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "sg for monitor",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "CidrIp" : { "Ref" : "AdminAccess" }
+                }]
+            }
+        },
+        "DevOpsDeployerSG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "sg for deployer",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "SourceSecurityGroupName" : "DevOpsDeployerSG"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "CidrIp" : { "Ref" : "AdminAccess" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "BBCPPortStart" },
+                    "ToPort" : { "Ref" : "BBCPPortEnd" },
+                    "SourceSecurityGroupName" : "DevOpsDeployerSG"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "NRPEPort" },
+                    "ToPort" : { "Ref" : "NRPEPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "BBCPPortStart" },
+                    "ToPort" : { "Ref" : "BBCPPortEnd" },
+                    "SourceSecurityGroupName" : "TestbedSG"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "BBCPPortStart" },
+                    "ToPort" : { "Ref" : "BBCPPortEnd" },
+                    "SourceSecurityGroupName" : "ProductionSG"
+                }]
+            }
+        },
+        "TestbedSG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "sg for managed nodes",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "SourceSecurityGroupName" : "DevOpsDeployerSG"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "CidrIp" : { "Ref" : "AdminAccess" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "NRPEPort" },
+                    "ToPort" : { "Ref" : "NRPEPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                }]
+            }
+        },
+        "ProductionSG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "sg for managed nodes",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "SourceSecurityGroupName" : "DevOpsDeployerSG"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "NRPEPort" },
+                    "ToPort" : { "Ref" : "NRPEPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                }]
+            }
+        }
+    }
+}
+

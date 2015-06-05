@@ -1,0 +1,14 @@
+{
+  "Statement": [
+    {
+      "Sid": "StmtEC2",
+      "Action": [
+        "ec2:CreateImage"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}

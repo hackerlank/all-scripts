@@ -1,0 +1,27 @@
+#!/bin/bash
+
+FRONTEND="<%=@sitename%>"
+SITE="<%=@search_appdir%>"
+<% @approot = (@appname == 'lestore') ? @appdir+"/application" : @appdir-%>
+SEARCH_CONF="/var/www/http/<%=@approot%>/data/env_config.php"
+#SEARCH_HOST=$(php -r "include \"${SEARCH_CONF}\"; echo \$search_host;" | cut -d ":" -f 1)
+level="Sev-1"
+
+for SEARCH_HOST in $(php -r "include \"${SEARCH_CONF}\"; foreach (\$search_hosts as \$key => \$value){echo substr(\$value,0,strpos(\$value,':')).' ';};")
+do
+	TRY_TIMES=3
+	url="http://${SEARCH_HOST}:38080/${SITE}/SearchServlet?proj=jjshouse&action=search&domain=<%=@check_domain%>&json=%7B%22keyWord%22%3A%22<%=@checksku%>%22%2C%22languageId%22%3A1%2C%22orderBy%22%3A%22salesOrder%22%2C%22limit%22%3A24%2C%22offset%22%3A0%7D"
+	r=1
+	while [ $r -ne 0 ] && [ $TRY_TIMES -ne 0 ]
+	do
+		wget -t 3 -T 30 -q -O - "$url" | grep -v '{"total":0,"catTotal":{},"goodsIdList":\[\]}'  | grep total | grep goodsIdList
+		r=$?
+		if [ $r -eq 0 ]; then
+				exit 0
+		fi
+		let TRY_TIMES--
+		sleep 60
+	done
+done
+/var/job/alert.sh <%=@test?'test':'prod'%> $level \
+    "AWS Alert: frontend:${FRONTEND} search check error" "Error searching from frontend!."

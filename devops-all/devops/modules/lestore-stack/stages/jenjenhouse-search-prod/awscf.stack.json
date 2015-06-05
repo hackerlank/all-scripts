@@ -1,0 +1,283 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+    "Description" : "Create an EC2 instance running the Amazon Linux 64 bit AMI. The AMI is chosen based on the region in which the stack is run. This example creates an EC2 security group for the instance to give you SSH access. **WARNING** This template creates one or more Amazon EC2 instances. You will be billed for the AWS resources used if you create a stack from this template.",
+
+    "Parameters" : {
+        "StackShortName" : {
+            "Description" : "The Stage of this environment",
+            "Type" : "String"
+        },
+        "SearchType" : {
+            "Description" : "Type of EC2 instance to launch",
+            "Type" : "String",
+            "Default" : "c1.medium",
+            "AllowedValues" : [ "t1.micro", "m1.small","m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", 
+            "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge", "cc1.4xlarge"]
+        },
+        "SSHPort" : {
+            "Description" : "The TCP port for the SSH",
+            "Type" : "String",
+            "Default" : "38022"
+        },
+        "WebServerPort" : {
+            "Description" : "The TCP port for the Web Server",
+            "Type" : "String",
+            "Default" : "80"
+        },
+        "DBPort" : {
+            "Description" : "The TCP port for DB",
+            "Type" : "String",
+            "Default" : "3306"
+        },
+        "SearchServerPort" : {
+            "Description" : "The TCP port for the Search Server",
+            "Type" : "String",
+            "Default" : "38080"
+        },
+        "NRPEPort" : {
+            "Description" : "The TCP port for NRPE Monitor",
+            "Type" : "String",
+            "Default" : "5666"
+        },
+        "KeyName" : {
+            "Description" : "The EC2 Key Pair to allow SSH access to the instances",
+            "Type" : "String",
+            "Default" : "prod_rsa",
+            "MinLength": "1",
+            "MaxLength": "64",
+            "AllowedPattern" : "[-_ a-zA-Z0-9\\.]*",
+            "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+        },
+        "ProductionAccessSG" : {
+            "Description" : "The SecurityGroup that can access production env service",
+            "Type" : "String",
+            "Default" : "lestore-production"
+        },
+        "DeployerSG" : {
+            "Description" : "The SecurityGroup that can ssh to VMs",
+            "Type" : "String",
+            "Default" : "lestore-devops-deployer"
+        },
+        "MonitorSG" : {
+            "Description" : "The SecurityGroup that can monitor VMs",
+            "Type" : "String",
+            "Default" : "lestore-devops-monitor"
+        },
+        "Deployer" : {
+            "Description" : "The public hostname of the Deployer",
+            "Type" : "String"
+        },
+        "Monitor" : {
+            "Description" : "The address of NRPE Monitor",
+            "Type" : "String",
+            "Default" : "localhost"
+        }
+    },
+
+    "Mappings" : {
+        "AWSInstanceType2Arch" : {
+            "t1.micro" : { "Arch" : "64" },
+            "m1.small" : { "Arch" : "64" },
+            "c1.medium" : { "Arch" : "64" }
+        },
+        "AWSRegionArch2AMI" : {
+            "us-east-1" : { "64" : "ami-aecd60c7" },
+			"us-west-1" : { "64" : "ami-7aba833f" },
+            "us-west-2" : { "64" : "ami-48da5578" },
+            "ap-southeast-1" : { "64" : "ami-b40d5ee6" },
+            "ap-northeast-1" : { "64" : "ami-c9562fc8" } 
+        }
+    },
+
+    "Resources" : {
+        "CfnUser" : {
+            "Type" : "AWS::IAM::User",
+            "Properties" : {
+                "Path": "/",
+                "Policies": [{
+                    "PolicyName": "root",
+                    "PolicyDocument": { "Statement":[{
+                        "Effect":"Allow",
+                        "Action":"cloudformation:DescribeStackResource",
+                        "Resource":"*"
+                    }]}
+                }]
+            }
+        },
+
+        "HostKeys" : {
+            "Type" : "AWS::IAM::AccessKey",
+            "Properties" : {
+                "UserName" : {"Ref": "CfnUser"}
+            }
+        },
+
+        "SearchJenJenHouse" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" }, { "Ref" : "ProductionAccessSG" } ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "SearchType" }, "Arch" ] } ] },
+                "InstanceType" : { "Ref" : "SearchType" },
+                "BlockDeviceMappings" : [{"DeviceName" : "/dev/sda1", "Ebs" : { "VolumeSize" : "20" }}],
+                "Tags": [
+                { "Key" : "Name", "Value": {"Fn::Join" : [ "-", [ 
+                                               { "Ref" : "StackShortName" }, 
+                                               "searchjen" ]]}
+                },
+                { "Key" : "stack-status", "Value": "down" },
+                { "Key" : "lestore:apps", "Value": ",lestore-vm,lestore-search,monitor.search," }
+                ],
+                    "UserData" : { "Fn::Base64" : { 
+                        "Fn::Join" : ["", [
+                            "#!/bin/bash -v\n",
+                        "\n",
+                        "echo -n ", {"Ref" : "StackShortName"},"-SearchJenJenHouse > /home/ec2-user/nodename\n",
+                        "echo -n JenJenHouse > /home/ec2-user/search.Domain\n",
+                        "cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orgbak\n",
+                        "echo 'Port ", { "Ref" : "SSHPort" }, "' >> /etc/ssh/sshd_config\n",
+                        "service sshd restart\n",
+                        "yum update -y aws-cfn-bootstrap\n",
+                        "# Helper function\n",
+                        "function error_exit\n",
+                        "{\n",
+                        " /opt/aws/bin/cfn-signal -e 1 -r \"$1\" '", { "Ref" : "SearchJenJenHouseWaitHandle"}, "'\n",
+                        " exit 1\n",
+                        "}\n",
+                        "# Install LAMP packages\n",
+                        "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r SearchJenJenHouse ",
+                        " --access-key ", { "Ref" : "HostKeys" },
+                        " --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                        " --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+                        "# All is well so signal success\n",
+                        "/opt/aws/bin/cfn-signal -e 0 -r \"SearchJenJenHouse setup complete\" '", {"Ref" : "SearchJenJenHouseWaitHandle" }, "'\n"
+                            ]]
+                    }} 
+            },
+
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "config" : {
+                        "packages" : {
+                            "yum" : {
+                                "dos2unix" : [],
+                                "puppet" : [],
+                                "make" : [],
+                                "git" : []
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "SearchJenJenHouseWaitHandle" : {
+            "Type" : "AWS::CloudFormation::WaitConditionHandle"
+        },
+        "SearchJenJenHouseWaitCondition" : {
+            "Type" : "AWS::CloudFormation::WaitCondition",
+            "DependsOn" : "SearchJenJenHouse",
+            "Properties" : {
+                "Handle" : {"Ref" : "SearchJenJenHouseWaitHandle"},
+                "Timeout" : "1000"
+            }
+        },
+
+        "InstanceSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Enable access",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SSHPort" },
+                    "ToPort" : { "Ref" : "SSHPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "DeployerSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "NRPEPort" },
+                    "ToPort" : { "Ref" : "NRPEPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "MonitorSG" }
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : { "Ref" : "SearchServerPort" },
+                    "ToPort" : { "Ref" : "SearchServerPort" },
+                    "SourceSecurityGroupName" : { "Ref" : "ProductionAccessSG" }
+                }]
+            }
+        },
+        "SearchJenJenHouseVolAttach" :  {
+            "Type":"AWS::EC2::VolumeAttachment",
+            "Properties" : {
+                "Device" : "/dev/sdf", 
+                "InstanceId" : { "Ref" : "SearchJenJenHouse" }, 
+                "VolumeId" : { "Ref" : "SearchJenJenHouseVol" }
+            } 
+        },
+        "SearchJenJenHouseVol" : {
+            "Type":"AWS::EC2::Volume",
+            "Properties" : {
+                "AvailabilityZone" : { "Fn::GetAtt" : [ "SearchJenJenHouse", "AvailabilityZone" ] },
+                "Size" : 10,
+                "Tags" : [ 
+                    { "Key" : "Name", "Value": {"Fn::Join" : [ "-", [
+                                                   "vol",
+                                                   { "Ref" : "SearchJenJenHouse" }, 
+                                                   "SearchJenJenHouse"
+                                               ]]}
+                    },
+                    {"Key" : "EC2Instance", "Value" : { "Ref" : "SearchJenJenHouse"}}
+                ], 
+                "VolumeType" : "standard"
+            } 
+        },
+        "CPUAlarmHigh": {
+           "Type": "AWS::CloudWatch::Alarm",
+           "Properties": {
+              "AlarmDescription": "Send mail if CPU is greater than 90% for 10 minutes",
+              "MetricName": "CPUUtilization",
+              "Namespace": "AWS/EC2",
+              "Statistic": "Average",
+              "Period": "300",
+              "EvaluationPeriods": "2",
+              "Threshold": "90",
+              "AlarmActions": ["arn:aws:sns:us-east-1:970550863131:jenjen_alarm"],
+              "Dimensions": [
+                 {
+                    "Name": "InstanceId",
+                    "Value": { "Ref": "SearchJenJenHouse" }
+                 }
+              ],
+              "ComparisonOperator": "GreaterThanThreshold"
+             }
+        },
+        "CheckInstance": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Properties": {
+              "AlarmDescription": "Send mail if instance status check is failed",
+              "MetricName": "StatusCheckFailed",
+              "Namespace": "AWS/EC2",
+              "Statistic": "Maximum",
+              "Period": "300",
+              "EvaluationPeriods": "2",
+              "Threshold": "1",
+              "AlarmActions": ["arn:aws:sns:us-east-1:970550863131:jenjen_alarm"],
+              "Dimensions": [
+                 {
+                    "Name": "InstanceId",
+                    "Value": { "Ref": "SearchJenJenHouse" }
+                 }
+              ],
+              "ComparisonOperator": "GreaterThanOrEqualToThreshold"                
+            }
+        }
+
+    },
+
+    "Outputs" : {
+        "StackShortName" : {
+            "Description" : "The stage of this stack.",
+            "Value" : { "Ref" : "StackShortName" }
+        }
+    }
+}
+

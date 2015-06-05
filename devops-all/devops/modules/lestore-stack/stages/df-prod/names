@@ -1,0 +1,13 @@
+df-prod-1-dfp1  df-prod-1   107.20.177.60
+df-prod-1-dfp2  df-prod-2   107.22.196.151
+df-prod-1-dfp3  df-prod-3   54.204.36.159
+df-prod-1-dfp4  df-prod-4   54.204.36.243
+df-prod-1-dfp5  df-prod-5   54.204.37.0
+df-prod-1-dfp6  df-prod-6   54.204.37.3
+
+df-prod-3-dfp1  df-prod-1   23.21.101.29     
+df-prod-3-dfp2  df-prod-2   23.21.103.125    
+df-prod-3-dfp3  df-prod-3   23.21.106.26
+df-prod-3-dfp4  df-prod-4   23.21.106.46     
+df-prod-3-dfp5  df-prod-5   23.21.106.68     
+df-prod-3-dfp6  df-prod-6   23.21.107.57

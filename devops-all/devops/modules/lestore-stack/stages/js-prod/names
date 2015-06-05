@@ -1,0 +1,33 @@
+#cms 50.16.230.173
+js-prod-0-jsp1  js-prod-1 50.19.255.229
+js-prod-0-jsp2  js-prod-2 50.19.232.69
+js-prod-0-jsp3  js-prod-3 54.235.197.35
+js-prod-0-jsp4  js-prod-4 23.21.55.227
+js-prod-0-jsp5  js-prod-5 54.235.113.53
+js-prod-0-jsp6  js-prod-6 54.235.113.65
+js-prod-0-jsp7  js-prod-7 184.73.205.106
+js-prod-0-jsp8  js-prod-8 184.73.214.221
+js-prod-0-jsp9  js-prod-9 184.73.208.140
+
+js-prod-2-jsp1  js-prod-1 54.225.113.2
+js-prod-2-jsp2  js-prod-2 54.225.120.167
+js-prod-2-jsp3  js-prod-3 54.225.120.169
+js-prod-2-jsp4  js-prod-4 54.225.120.176
+js-prod-2-jsp5  js-prod-5 54.225.120.251
+js-prod-2-jsp6  js-prod-6 54.225.120.189
+js-prod-2-jsp7  js-prod-7 184.73.213.62
+js-prod-2-jsp8  js-prod-8 184.73.206.82
+js-prod-2-jsp9  js-prod-9 184.73.215.24
+
+# jjshouse backup IPs
+js-prod-0-jjsf1  js-prod-1 54.191.252.155
+js-prod-0-jjsf2  js-prod-2 54.191.119.83
+js-prod-0-jjsf3  js-prod-3 54.187.138.249
+js-prod-0-jjsf4  js-prod-4 54.191.182.66
+js-prod-0-jjsf5  js-prod-5 54.201.19.56
+
+js-prod-2-jjsf1  js-prod-1 54.191.236.194
+js-prod-2-jjsf2  js-prod-2 54.191.200.10
+js-prod-2-jjsf3  js-prod-3 54.201.118.10
+js-prod-2-jjsf4  js-prod-4 54.191.182.11
+js-prod-2-jjsf5  js-prod-5 54.191.12.251

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+level="Sev-2"
+flag1=12
+flag2=8
+load=$(/usr/bin/uptime | awk '{print $(NF-2)}' | sed 's/,//')
+int_load1=$(echo $load | awk -F. '{print $1}')
+/usr/bin/uptime >> /var/log/monitor/check_uptime.$(date +\%Y\%m\%d).log 2>&1
+
+if [ $int_load1 -ge $flag1 ]
+then
+        top_info=`top -b1 -n1`
+        /var/job/alert.sh <%=@test?'test':'prod'%> $level\
+            "AWS Alert: load is critical" "Level: $level \nInfo: load average $load \n\n $top_info"
+        echo "send $level mail" >> /var/log/monitor/check_uptime.$(date +\%Y\%m\%d).log 2>&1
+elif [ $int_load1 -ge $flag2 ]
+then
+        load_count=`awk -F':' '{print $5}' /var/log/monitor/check_uptime.$(date +\%Y\%m\%d).log | tail -3 | awk -F',' '{if($1>=8) print $1}' | wc -l`
+        if [ $load_count -ge 3 ]
+        then
+                top_info=`top -b1 -n1`
+                /var/job/alert.sh <%=@test?'test':'prod'%> $level\
+                    "AWS Alert: load is critical" "Level: $level \nInfo: load average $load \n\n $top_info"
+                echo "send $level mail" >> /var/log/monitor/check_uptime.$(date +\%Y\%m\%d).log 2>&1
+        fi
+fi
+
+xhprof_flag=6
+
+if [ $int_load1 -ge $xhprof_flag ]
+then
+        echo "#touch /tmp/xhprof"  >> /var/log/monitor/check_uptime.$(date +\%Y\%m\%d).log 2>&1
+        touch /tmp/xhprof
+elif [ -f /tmp/xhprof ]
+then
+        echo "#rm /tmp/xhprof"  >> /var/log/monitor/check_uptime.$(date +\%Y\%m\%d).log 2>&1
+        rm /tmp/xhprof
+fi
+
+#lsof_flag=5
+#
+#if [ $int_load1 -ge $lsof_flag ]
+#then
+#        echo "now: $(date +'%Y-%m-%d %H:%M:%S')"  >> /var/log/monitor/check_lsof.$(date +\%Y\%m\%d).log 2>&1
+#        lsof  >> /var/log/monitor/check_lsof.$(date +\%Y\%m\%d).log 2>&1
+#fi

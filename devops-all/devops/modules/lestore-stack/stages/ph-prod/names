@@ -1,0 +1,6 @@
+#cms         23.21.252.181
+ph-prod-1-phf1  ph-prod-1  107.21.92.100
+ph-prod-1-phf2  ph-prod-2  54.225.101.224
+
+ph-prod-3-phf1  ph-prod-1  54.225.110.105
+ph-prod-3-phf2  ph-prod-2  54.225.110.121

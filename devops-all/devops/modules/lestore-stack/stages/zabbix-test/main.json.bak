@@ -1,0 +1,125 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+	"Description" : "Description for Zabbix Monitor Server",
+
+    "Parameters" : {
+        "StackShortName" : {
+            "Description" : "The Stage of this environment",
+            "Type" : "String"
+        },
+        "InstanceType" : {
+            "Description" : "Type of EC2 instance to launch",
+            "Type" : "String",
+            "Default" : "t2.small",
+            "AllowedValues" : [ "t2.micro", "t1.micro", "t2.small", "m1.large", "m1.xlarge", "m2.xlarge",
+            "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge", "cc1.4xlarge"]
+        },
+        "SSHPort" : {
+            "Description" : "The TCP port for the SSH",
+            "Type" : "String",
+            "Default" : "38022"
+        },
+        "HTTPPort" : {
+            "Description" : "The TCP port for the Web Server",
+            "Type" : "String",
+            "Default" : "80"
+        },
+        "HTTPSPort" : {
+            "Description" : "The TCP port for the Web Server",
+            "Type" : "String",
+            "Default" : "443"
+        },
+		"ZabbixServerPort" : {
+            "Description" : "The TCP port for Zabbix Server Monitor",
+            "Type" : "String",
+            "Default" : "10051"
+        },
+        "ZabbixAgentPort" : {
+            "Description" : "The TCP port for Zabbix Agent Monitor",
+            "Type" : "String",
+            "Default" : "10050"
+        },
+        "KeyName" : {
+            "Description" : "The EC2 Key Pair to allow SSH access to the instances",
+            "Type" : "String",
+            "Default" : "test_rsa",
+            "MinLength": "1",
+            "MaxLength": "64",
+            "AllowedPattern" : "[-_ a-zA-Z0-9\\.]*",
+            "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+        },
+        "Deployer" : {
+            "Description" : "The public hostname of the Deployer",
+            "Type" : "String"
+        },
+		"AVpcID" : {
+            "Description" : "ApcId of existing America (VPC)",
+            "Type" : "String",
+            "Default" : "vpc-2dedb848"
+        },
+		"TVpcID" : {
+            "Description" : "VpcId of existing TYO (VPC)",
+            "Type" : "String",
+            "Default" : "vpc-b3ec06d6"
+        },
+		"SVpcID" : {
+            "Description" : "VpcId of existing SG (VPC)",
+            "Type" : "String",
+            "Default" : "vpc-de6795bb"
+        }
+    },
+
+    "Mappings" : {
+        "AWSInstanceType2Arch" : {
+            "t2.micro" 	: { "Arch" : "64" },
+            "t2.small" 	: { "Arch" : "64" },
+            "t2.medium" : { "Arch" : "64" }
+        },
+        "AWSRegionArch2AMI" : {
+            "us-east-1" : { "64" : "ami-146e2a7c" },
+            "ap-southeast-1" : { "64" : "ami-ac5c7afe" },
+            "ap-northeast-1" : { "64" : "ami-4985b048"}
+        },
+		"AWSSubnetId" : {
+            "us-east-1" : { "SubnetA" : "subnet-6e4f2e19", "SubnetB" : "subnet-1ad15743" },
+            "ap-southeast-1" : { "SubnetA" : "subnet-81ae78e4", "SubnetB" : "subnet-627c9615" },
+            "ap-northeast-1" : { "SubnetA" : "subnet-e7d33a90", "SubnetC" : "subnet-f57975b3" }
+        }
+    },
+
+    "Resources" : {
+        "CfnUser" : {
+            "Type" : "AWS::IAM::User",
+            "Properties" : {
+                "Path": "/",
+                "Policies": [{
+                    "PolicyName": "root",
+                    "PolicyDocument": {
+                        "Statement":[
+                            { "Effect":"Allow", "Action":"ec2:*","Resource":"*" },
+			    			{ "Effect":"Allow", "Action":"cloudformation:Describe*","Resource":"*" }
+                        ]
+                    }
+                }]
+            }
+        },
+
+        "HostKeys" : {
+            "Type" : "AWS::IAM::AccessKey",
+            "Properties" : {
+                "UserName" : {"Ref": "CfnUser"}
+            }
+        }
+
+	@@##RESOURCE##@@
+	},
+
+    "Outputs" : {
+        "StackShortName" : {
+            "Description" : "The stage of this stack for Zabbix Server.",
+            "Value" : { "Ref" : "StackShortName" }
+        }
+    }
+}
+

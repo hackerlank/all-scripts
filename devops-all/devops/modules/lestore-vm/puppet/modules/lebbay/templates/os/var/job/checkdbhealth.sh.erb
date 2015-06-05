@@ -1,0 +1,21 @@
+#! /bin/bash
+
+:<<EOF
+By Zandy
+Check db health
+EOF
+
+<% @approot = (@appname == 'lestore') ? @appdir+"/application" : @appdir-%>
+
+if [ ! -e /var/www/http/<%=@approot%>/data/env_config.php ]; then exit 0; fi;
+
+if [ ! -e /var/log/<%=@sitename%> ]; then mkdir -p /var/log/<%=@sitename%>; fi;
+
+dbstate=$(php -f /var/www/http/<%=@approot%>/ch.php 10 <%=@sitename%>)
+if [ "$dbstate" = "ok" ]; then
+	:
+else
+        /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-2' \
+        "DOWN alert: <%=@stagename%>, can not connect to db." "can not connect to db."
+fi
+

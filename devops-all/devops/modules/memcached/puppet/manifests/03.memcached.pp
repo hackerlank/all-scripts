@@ -1,0 +1,1 @@
+class { 'lebbay::middleware::memcached' :}

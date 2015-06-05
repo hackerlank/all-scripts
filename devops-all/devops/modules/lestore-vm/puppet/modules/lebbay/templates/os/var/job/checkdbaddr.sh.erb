@@ -1,0 +1,46 @@
+#! /bin/bash
+
+:<<EOF
+By bcheng
+bound db addr if dns is in trouble
+EOF
+
+SITE="<%=@appdir%>"
+LOG="/var/log/${SITE}/dbip.log"
+TIME=$(date +%F_%H-%M-%S)
+OP_LOG="/var/log/monitor/checkdbaddr.$(date +%Y%m%d).log"
+SED="sed -r"
+HOSTS="/etc/hosts"
+ITEMS=('db_host')
+
+<% @approot = (@appname == 'lestore') ? @appdir+"/application" : @appdir-%>
+
+if [ ! -e /var/www/http/<%=@approot%>/data/env_config.php ]; then exit 0; fi;
+
+if [ ! -e /var/log/${SITE} ]; then mkdir -p /var/log/${SITE}; fi;
+
+if [ ! -e ${LOG} ]; then touch ${LOG}; fi;
+
+CONF="/var/www/http/<%=@approot%>/data/env_config.php"
+
+for h in ${ITEMS[@]}
+do
+        HOST=$(php -r "include \"${CONF}\"; echo \$${h};" | cut -d ":" -f 1)
+        DIG="dig ${HOST} A +noall +answer +time=5 +tries=2"
+        IP=$(${DIG} | grep -v -E "^;" | sed -r '/^$/d' | awk '{print $NF}')
+        if [ -z "${IP}" ]; then
+                ip=$(cat ${LOG} | grep ${HOST} | awk '{print $3}' | grep -E '^((25[0-5]|2[0-4][0-9]|[01]?[1-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[1-9][0-9]?)$')
+                ip_host=$(cat ${HOSTS} | grep ${HOST} | awk '{print $1}')
+                if [ ! -z $ip ] && [ "${ip_host}" != "${ip}" ]; then
+                	sleep 0.${RANDOM}
+        	        ${SED} -i "/${HOST}/d" ${HOSTS}
+        	        echo "write to hosts:"
+        	        echo "${ip} ${HOST}" | tee -a ${HOSTS}
+        	        printf "${TIME} ${SITE} bound server %-40s %-20s\n" ${HOST} ${ip} >> ${OP_LOG}
+                fi
+        else
+                ${SED} -i "/${HOST}/d" ${HOSTS}
+                ${SED} -i "/^.*${HOST}.*/d" ${LOG}
+                echo ${TIME} ${HOST} ${IP} | tee -a ${LOG}
+        fi
+done

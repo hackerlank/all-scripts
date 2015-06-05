@@ -1,0 +1,95 @@
+#! /bin/sh
+#
+# chkconfig: - 84 16
+# description:  PHP FastCGI Process Manager
+# processname: php-fpm
+# config: /usr/local/webserver/php/etc/php-fpm.conf
+# pidfile: /var/run/php-fpm/php-fpm.pid
+
+# Standard LSB functions
+#. /lib/lsb/init-functions
+
+# Source function library.
+. /etc/init.d/functions
+
+# Check that networking is up.
+. /etc/sysconfig/network
+
+if [ "$NETWORKING" = "no" ]
+then
+    exit 0
+fi
+
+php_home="/usr/local/webserver/php"
+php_fpm="$php_home/sbin/php-fpm"
+prog=$(basename $php_fpm) 
+RETVAL=0
+pidfile=${PIDFILE-$php_home/var/run/php-fpm.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/php-fpm}
+
+start () {
+    echo -n $"Starting $prog: "
+    daemon --pidfile ${pidfile} ${php_fpm} -c ${php_home}/etc -y ${php_home}/etc/php-fpm.conf -g ${pidfile}
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch ${lockfile}
+}
+stop () {
+    echo -n $"Stopping $prog: "
+    killproc -p ${pidfile} $prog
+    RETVAL=$?
+    echo
+
+#    ps -e -o pid,ppid,cmd | grep php-fpm | grep -v grep | cut -d ' ' -f 2 | grep -v $$ | xargs -i kill -9 {} > /dev/null 2>&1
+#    ps -e -o pid,ppid,cmd | grep php-fpm | grep -v grep | grep \<defunct\> | cut -d ' ' -f 3 | grep -v $$ | xargs -i kill -9 {} > /dev/null 2>&1
+#    ps -e -o pid,ppid,cmd | grep php-fpm | grep -v grep | cut -d ' ' -f 2 | grep -v $$ | xargs -i kill -9 {} > /dev/null 2>&1
+#    if [ $RETVAL -ne 0 ] ; then
+#      RETVAL=$?
+#    fi
+
+    if [ $RETVAL -eq 0 ] ; then
+        rm -f ${lockfile} ${pidfile};
+    fi
+}
+
+restart () {
+        stop
+        start
+}
+
+reload () {
+    echo -n $"Reloading $prog: "
+    killproc -p ${pidfile} $prog -USR2
+    RETVAL=$?
+    echo
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status -p ${pidfile} $prog
+    RETVAL=$?
+    ;;
+  restart)
+    restart
+    ;;
+  reload|force-reload)
+    reload
+    ;;
+  condrestart|try-restart)
+    [ -f ${lockfile} ] && restart || :
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart|try-restart}"
+    RETVAL=2
+        ;;
+esac
+
+exit $RETVAL

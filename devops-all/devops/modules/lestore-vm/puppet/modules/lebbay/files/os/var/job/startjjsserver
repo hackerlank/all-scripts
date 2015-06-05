@@ -1,0 +1,23 @@
+#! /bin/bash
+
+ulimit -SHn 65535
+
+# Increase max shared memory to 134217728.
+echo 134217728 > /proc/sys/kernel/shmmax
+
+mount /dev/sdf /opt/data1
+#mount /dev/xvdh /opt/data1
+
+#/etc/init.d/httpd stop
+#/etc/init.d/nginx stop
+
+##/usr/sbin/tomcat6 start
+
+/usr/local/webserver/php5.3/sbin/php-fpm
+/usr/local/webserver/nginx/sbin/nginx
+
+##/var/job/forwardromeo &
+
+#backup image to S3 real time
+##/var/job/imgbaktos3realtime.sh &
+

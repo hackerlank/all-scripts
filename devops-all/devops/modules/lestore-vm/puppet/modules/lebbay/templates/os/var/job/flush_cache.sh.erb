@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ -f /var/job/host_name.conf ]; then
+    source /var/job/host_name.conf
+fi
+
+active=false
+if [ "${host_name: -1}" == '1' ]; then
+    active=true
+elif [ -z "$(echo $host_name | grep 'prod')" ]; then
+    active=true
+fi
+
+common="<%=@httpdir%>/<%=@appdir%>/stages/common";
+if [ -z "$1" ]; then
+    if [ "$active" == true ]; then
+        hour=$(date +%H)
+        case "$hour" in
+            18|19|20|21|00|01)
+                #flush delta cache
+                php $common/flush_cache.php -k -m -c -f -p --pd -e -u -g -y -b="$(date -d'-90min' +'%Y-%m-%d %H:%M:%S')" -l=12 -i=0.5
+                ;;
+            22)
+                #flush full cache
+                php $common/flush_cache.php -k -m -s -f -p --pd -e -u -g -l=12 -i=0.5
+                ;;
+        esac
+    fi
+else
+    php $common/flush_cache.php $@
+fi
+

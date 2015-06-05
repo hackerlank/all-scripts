@@ -1,0 +1,16 @@
+{
+  "Statement": [
+    {
+      "Sid": "StmtRDS",
+      "Action": [
+        "rds:CreateDBSnapshot",
+        "rds:DeleteDBSnapshot",
+        "rds:DescribeDBSnapshots"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}

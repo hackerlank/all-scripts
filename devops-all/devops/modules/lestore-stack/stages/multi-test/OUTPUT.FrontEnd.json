@@ -1,0 +1,10 @@
+
+	"Node@@##FrontEnd##@@" : {
+            "Description" : "",
+            "Value" : {"Fn::Join" : [ ":", [
+                    { "Ref" : "@@##FrontEnd##@@" }, 
+                    { "Fn::GetAtt" : [ "@@##FrontEnd##@@", "PublicDnsName" ] }, 
+                    ",lestore-vm,memcached,orderfromchina,dressdepot,vbridal,lestore,jjshouse,jennyjoseph,lestore-ops,monitor.front,frontend,"
+                ]]
+            }
+        }

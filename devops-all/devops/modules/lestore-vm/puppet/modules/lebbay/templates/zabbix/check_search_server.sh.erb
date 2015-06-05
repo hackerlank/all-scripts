@@ -1,0 +1,33 @@
+#! /bin/bash
+
+#SITE="jjssearch"
+#SEARCH_HOST="ec2-54-242-181-198.compute-1.amazonaws.com:38080"
+#PROJECT_NAME="jjshouse"
+#DOMAIN="JJsHouse"
+
+SITE=$1
+SEARCH_HOST=$2
+PROJECT_NAME=$3
+DOMAIN=$4
+
+url="http://${SEARCH_HOST}/${SITE}/SearchServlet?proj=${PROJECT_NAME}&action=search&domain=${DOMAIN}&json=%7B%22keyWord%22%3A%22007004117%22%2C%22languageId%22%3A1%2C%22orderBy%22%3A%22salesOrder%22%2C%22limit%22%3A24%2C%22offset%22%3A0%7D"
+
+TRY_TIMES=3
+r=1
+while [ $r -ne 0 ] && [ $TRY_TIMES -gt 0 ]
+do
+        wget -t 3 -T 30 -q -O - "$url" | grep -v '{"total":0,"'  | grep "total" | grep "goodsIdList" > /dev/null 2>&1
+        r=$?
+        if [ $r -eq 0 ]; then
+                #echo "OK"
+                echo 0
+                exit 0
+        fi
+        let TRY_TIMES--
+        sleep 3
+done
+
+#echo "ERROR"
+echo 1
+exit 1
+

@@ -1,0 +1,2 @@
+UserParameter=mysql.slave,/var/job/zabbix_get_slave.sh
+UserParameter=mysql.slave.status[*],/var/job/zabbix_mysql_slave.sh $1 $2

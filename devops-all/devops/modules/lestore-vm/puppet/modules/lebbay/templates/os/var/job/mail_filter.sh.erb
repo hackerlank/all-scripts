@@ -1,0 +1,91 @@
+#!/bin/bash
+
+DATE=$(date +%Y%m%d)
+LOG_PATH="/var/www/http/<%=@appdir%>/templates/compiled"
+LOG="${LOG_PATH}/alert.${DATE}.log"
+NOW=$(date +%s)
+
+if [ ! -e ${LOG} ]; then
+  echo "file not exist"
+  exit
+fi
+
+##TIME_LINE时间之内相同邮件不重复发送
+TIME_LINE=120
+
+## 发送t之内的日志内容
+lines=$(< ${LOG} grep -n logentry | sed -E "s/<|>|\/|logentry|:|'//g" | \
+awk 'BEGIN{"date +%s" | getline now; t=120; timeline=now-t; }{
+l="";
+if(NR%2 == 1)
+{ 
+    for(i=5;i<=NF;i++)
+    { 
+       if ( l=="" ) 
+       {
+           l=$i;
+       }
+       else 
+       {
+          l=l"_"$i;
+       } 
+   }
+   odd=$1" "$2" "$3" "l" "$4;
+} 
+else
+{
+   split(odd, arr, " ");
+   if (substr(arr[5],6)>=timeline)
+   {
+       print arr[1],$1,arr[2],arr[3],arr[4],arr[5];
+   }
+}
+}' | \
+sort -k 3 -k 4 -k 5 -k 6 | \
+awk '{
+   if(NR==1)
+   {
+       l=$0;
+       title=$3_$4_$5;
+       time=substr($6,6);
+       sum=1;
+   }
+   else
+   {
+       cur_title=$3_$4_$5;
+       cur_time=substr($6,6);
+       gap=cur_time-time;
+       if(cur_title != title || gap >= 120)
+       {
+	  print l,sum;
+	  l=$0;
+          title=$3_$4_$5;
+	  time=substr($6,6);
+	  sum=1;
+       }
+       else
+       {
+          sum++;
+       }
+   }
+}END{
+if(FNR != 0)
+{
+    print l,sum
+}}' | tr ' ' ';'
+)
+
+for l in $lines
+do
+	echo "$l"
+	start=$(echo "$l" | awk -F ";" '{print $1}')	
+	end=$(echo "$l" | awk -F ";" '{print $2}')
+	rank=$(echo "$l" | awk -F ";" '{print $3}' | cut -d "=" -f 2)
+	target=$(echo "$l" | awk -F ";" '{print $4}' | cut -d "=" -f 2)
+	topic=$(echo "$l" | awk -F ";" '{print $5}' | cut -d "=" -f 2)
+	time=$(echo "$l" | awk -F ";" '{print $6}' | cut -d "=" -f 2)
+	sum=$(echo "$l" | awk -F ";" '{print $7}')
+	echo $topic $rank $target $sum $start $end $time
+	/var/job/alert.sh $target 'Sev-'${rank} "${topic}" "$(cat $LOG | awk "NR==$(( $start + 1 )),NR==$(( $end -1 ))" | dos2unix | sed "\$a\total:$sum")"
+done
+

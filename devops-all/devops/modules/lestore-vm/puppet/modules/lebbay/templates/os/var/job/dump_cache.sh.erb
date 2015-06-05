@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ -f /var/job/host_name.conf ]; then
+    source /var/job/host_name.conf
+fi
+id=${host_name: -1}
+
+common="<%=@httpdir%>/<%=@appdir%>/stages/common";
+function dump(){
+    php $common/flush_cache.php -k --cache-reader=mc --cache-writer=fs -c -f -p -e -u -g -y --shipping --region --page --config  -l=12 -i=1
+}
+
+hour=$(date +%H)
+case "$hour" in
+	20)
+	if [ "$id" == "1" ] || [ "$id" == "2" ]; then
+        dump
+	fi
+	;;
+	22)
+	if [ "$id" == "3" ] || [ "$id" == "4" ]; then
+        dump
+	fi
+	;;
+	00)
+	if [ "$id" == "5" ] || [ "$id" == "6" ]; then
+        dump
+	fi
+	;;
+	02)
+	if [ "$id" == "7" ] || [ "$id" == "8" ]; then
+        dump
+	fi
+	;;
+	04)
+	if [ "$id" == "9" ]; then
+        dump
+	fi
+	;;
+esac
+

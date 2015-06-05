@@ -1,0 +1,42 @@
+#!/bin/bash
+source $(dirname $0)/config_moni.conf
+now=$(date +%Y%m%d%T)
+
+if [[ -z $name ]]
+then
+        name=${0#*rsync}
+fi
+
+cd /tmp
+if [ -f "over$name" ]
+then
+	echo $now $name
+	check_md5=$(cat /tmp/over$name)
+	rm -rf /tmp/over$name
+	rm -rf /tmp/$name.tar.gz /tmp/$name
+
+	#/usr/bin/rsync -vzrtopg -e "ssh -p32200" --progress --delete syncer@$local_server:/opt/data1/code/$name.tar.gz /tmp 
+	/usr/bin/rsync -vzrtopg -e "ssh" --progress --delete syncer@$local_server:/opt/data1/code/$name.tar.gz /tmp
+
+	cd /tmp
+	file_md5=$(md5sum $name.tar.gz|awk '{print $1}')
+	echo "file_md5:$file_md5 check_md5:$check_md5"  
+	if [[ $check_md5 != $file_md5 ]]
+	then
+		echo "file md5 error"
+		rm -rf /tmp/$name.tar.gz /tmp/$name
+		exit
+	fi
+
+	tar xzf $name.tar.gz
+
+	if [[ $? -ne 0 ]]
+	then
+		echo "file rsync error"
+		exit
+	fi
+
+	/usr/bin/rsync -vzrtopg --progress --delete --exclude "config.php" /tmp/$name/ /var/www/$name
+	echo
+	rm -rf /tmp/$name.tar.gz /tmp/$name
+fi

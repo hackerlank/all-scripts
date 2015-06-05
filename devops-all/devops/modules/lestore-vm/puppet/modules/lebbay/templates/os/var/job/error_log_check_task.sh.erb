@@ -1,0 +1,51 @@
+#!/bin/bash
+
+if [[ -f $(dirname $0)/host_name.conf ]]
+then
+        source $(dirname $0)/host_name.conf
+else
+        host_name=$(hostname)
+fi
+
+aws_name=`curl http://169.254.169.254/latest/meta-data/public-hostname`
+
+if [[ ! -z $aws_name ]]
+then
+        host_name=$aws_name@$host_name
+fi
+
+echo "run at: $(date +'%Y-%m-%d %H:%M:%S')"
+code_title=""
+project_name="<%= @appdir%>"
+tmp_file="/tmp/response_code_count"
+log_file="/opt/data1/nginxlogs/access-${project_name}-www.log"
+filter_time=`date -d "1 hours ago" +%H`
+if [ ! -f $log_file ]
+then
+        /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-2' \
+            "$project_name $log_file log file does not exist" "$log_file log file does not exist"
+else
+	rm -rf $tmp_file
+	awk -v filter_time=$filter_time -F":" '{if($2==filter_time) print $0}' $log_file|awk '{print $9}'|grep -E '^[0-9]{3}'|sort |uniq -c |awk '{print $2}'|grep "^5"
+	if [ $? -eq 0 ]
+	then
+		echo "[Sev-2] $project_name 5xx response code count $host_name"
+		echo > $tmp_file
+		echo "$log_file response code count" >> $tmp_file
+		echo "hostname $host_name" >> $tmp_file
+		code_count=`awk -v filter_time=$filter_time -F":" '{if($2==filter_time) print $0}' $log_file|awk '{print $9}'|sort |uniq -c |awk '{print $2":"$1}'`
+		for code in $code_count
+		do
+			code_title="$code_title `echo $code |awk -F":" '{if($1~/^5/) print "ERROR"$1}'`"
+			echo $code |grep -E '^[0-9]{3}' >> $tmp_file
+		done
+		/var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-2' \
+			"$project_name $code_title response code count" "$(cat $tmp_file)"
+		echo > $tmp_file
+		awk -v filter_time=$filter_time -F":" '{if($2==filter_time) print $0}' $log_file|awk '{if($9~/^5/) print NR" "$0}' >> $tmp_file
+		/var/job/alert.sh 'code_5xx' 'Sev-2' \
+			"$project_name $code_title response code count" "$(cat $tmp_file)"
+	fi
+fi
+
+echo "end at: $(date +'%Y-%m-%d %H:%M:%S')"

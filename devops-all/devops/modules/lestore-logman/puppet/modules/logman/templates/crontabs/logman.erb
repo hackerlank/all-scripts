@@ -1,0 +1,6 @@
+5 1 * * * flock -x -n /tmp/fetch_log.lock -c "/var/job/fetch_log.sh m" >> /var/log/cronjob/fetch_log.$(date +\%Y\%m\%d).log 2>&1
+5 13 * * * flock -x -n /tmp/fetch_log.lock -c "/var/job/fetch_log.sh a" >> /var/log/cronjob/fetch_log.$(date +\%Y\%m\%d).log 2>&1
+0 5 * * * find /opt/data1/merge_log/*/*.rar -mtime +10 2>/dev/null | xargs -I {} rm -f {}
+0 5 * * * find /opt/data1/merge_log/*/*.tar.gz -mtime +10 2>/dev/null | xargs -I {} rm -f {}
+0 2 * * * find /opt/data1/access_log/*/*.log -mtime +3 2>/dev/null | xargs -I {} rm -f {}
+0 3 * * * /var/job/count_ip.sh

@@ -1,0 +1,7 @@
+Function:
+This project is deployed on gitlab ci.
+1. Deploy jenkins keys on gitlab ci.
+2. Used to trigger jobs on jenkins.
+
+Usage:
+

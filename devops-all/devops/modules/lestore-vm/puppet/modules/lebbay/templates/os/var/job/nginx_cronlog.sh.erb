@@ -1,0 +1,36 @@
+#! /bin/bash
+
+if [ -n "$1" ]; then
+    mark=$1
+else
+    mark=$(date +%Y%m%d --date='1 days ago')
+fi
+nginx_log_dir="/opt/data1/nginxlogs"
+
+# config site name
+sites="<%= @appdir%>-www <%= @appdir%>-www-backend"
+
+for site in $sites; do
+	/bin/mv $nginx_log_dir/access-$site.log $nginx_log_dir/access-$mark-$site.log
+	echo "/bin/mv $nginx_log_dir/access-$site.log $nginx_log_dir/access-$mark-$site.log"
+done;
+/bin/mv $nginx_log_dir/error.log $nginx_log_dir/error-$mark.log
+
+/usr/sbin/nginx -s reopen
+if [ $? -ne 0 ]; then
+        /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-1' \
+            "AWS Alert: reopen nginx log failed" "Level: Sev-1 \nInfo: reopen nginx log failed." 
+fi
+
+echo "nginxcronglog at `date`"
+
+cd $nginx_log_dir
+sitename=<%= @sitename%>
+if [ ! -e "access-$mark-$sitename-www.log" ]; then
+    ln -s access-$mark-<%= @appdir%>-www.log access-$mark-$sitename-www.log
+fi
+tar chzf access-$mark-${sitename}.log.tar.gz access-$mark-$sitename-www.log access-$mark-<%= @appdir%>-www-backend.log
+
+<% if @default_site %>
+mv access-$mark-${sitename}.log.tar.gz access-$mark.log.tar.gz
+<% end %>

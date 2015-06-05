@@ -1,0 +1,27 @@
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user  command
+17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+#
+
+* * * * * root /var/job/goods_thumb_m.sh
+
+0,30 * * * *  root  /var/job/check_disk.sh
+
+*/10 * * * * root /home/yzhang/bin/rsyncupload.sh e9573fbb5840585c1e3b2fe4b354d61b
+*/10 * * * * root /home/yzhang/bin/sync2s3.sh 73c294e0b4b83fc458dbc2e96c66e1ea
+*/10 * * * * root /var/job/sync2s3_checklog.sh put 93b99269b0cf7a670b62e87ae200cb39 >> /var/log/s3sync.checklog.log 2>>/var/log/s3sync.checklog.log
+
+#*/10 * * * * root /home/hwang/sync2s3_check.sh put 8579e781b551fef56324a0d3b494147d >> /var/log/s3sync.min.log 2>>/var/log/s3sync.min.log
+
+*  *    * * *   root    /var/job/rsynctask >> /var/log/publish.log 2>>/var/log/publish.log

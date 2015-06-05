@@ -1,0 +1,16 @@
+#cms         23.21.252.181
+#je-prod-1-jep1  je-prod-1   23.21.216.58
+#je-prod-1-jep2  je-prod-2   23.21.248.27
+#je-prod-1-jep3  je-prod-3   54.235.217.2
+
+#je-prod-3-jep1  je-prod-1   54.225.113.109
+#je-prod-3-jep2  je-prod-2   54.225.113.124
+#je-prod-3-jep3  je-prod-3   54.225.113.148
+
+je-prod-0-jep1  je-prod-1   54.225.113.109
+je-prod-0-jep2  je-prod-2   54.225.113.124
+je-prod-0-jep3  je-prod-3   54.225.113.148
+
+je-prod-2-jep1  je-prod-1   23.21.216.58
+je-prod-2-jep2  je-prod-2   23.21.248.27
+je-prod-2-jep3  je-prod-3   54.235.217.2

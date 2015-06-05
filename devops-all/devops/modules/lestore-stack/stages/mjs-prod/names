@@ -1,0 +1,20 @@
+#mjs-prod-0-mjsp1  mjs-prod-1 23.23.244.2
+#mjs-prod-1-mjsp1  mjs-prod-1 23.23.243.130
+
+#ip reserved in jjshouse account
+#mjs-prod-0-mjsp1  mjs-prod-1 23.21.96.57
+#mjs-prod-0-mjsp2  mjs-prod-2 54.225.121.6
+
+#mjs-prod-2-mjsp1  mjs-prod-1 107.22.177.21
+#mjs-prod-2-mjsp2  mjs-prod-2 107.20.180.216
+
+# IPs  for mjs-prod-1 
+mjs-prod-1-mjsp1  mjs-prod-1 23.21.96.57
+mjs-prod-1-mjsp2  mjs-prod-2 54.225.121.6
+mjs-prod-1-mjsp3  mjs-prod-3 107.22.177.21
+mjs-prod-1-mjsp4  mjs-prod-4 107.20.180.216
+# IPs  for mjs-prod-3 
+mjs-prod-3-mjsp1  mjs-prod-1 54.204.35.156
+mjs-prod-3-mjsp2  mjs-prod-2 54.204.40.211
+mjs-prod-3-mjsp3  mjs-prod-3 54.204.41.89
+mjs-prod-3-mjsp4  mjs-prod-4 54.204.42.238

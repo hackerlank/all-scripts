@@ -1,0 +1,37 @@
+#!/bin/bash
+
+export LANG=C
+
+disk_flag_sev1=90
+disk_flag_sev2=85
+inode_flag_sev1=95
+inode_flag_sev2=90
+
+devices=`df -h|grep -v Filesystem |grep -v tmpfs |awk '{print $6}'`
+
+for  device  in  ${devices[*]}
+do
+        used=`df -h |awk '{if($NF=="'$device'") print $5}' |sed 's/%//g'`
+        echo "$device used $used%" 
+        if [ $used -ge $disk_flag_sev1 ]
+        then
+            /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-1' \
+            "AWS Alert: disk is critical" "Level: Sev-1 \nInfo: $device used $used%" 
+		elif [ $used -ge $disk_flag_sev2 ]
+		then
+			/var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-2' \
+            "AWS Alert: disk is critical" "Level: Sev-2 \nInfo: $device used $used%" 
+        fi
+
+	inode=`df -i |awk '{if($NF=="'$device'") print $5}' |sed 's/%//g'`
+	echo "$device inode used $inode%" 
+        if [ $inode -ge $inode_flag_sev1 ]
+        then
+            /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-1' \
+            "AWS Alert: disk inode is critical" "Level: Sev-1 \nInfo: $device inode used $inode%" 
+	    elif [ $inode -ge $inode_flag_sev2 ]
+	    then
+            /var/job/alert.sh <%=@test?'test':'prod'%> 'Sev-2' \
+            "AWS Alert: disk inode is critical" "Level: Sev-2 \nInfo: $device inode used $inode%" 
+        fi
+done
