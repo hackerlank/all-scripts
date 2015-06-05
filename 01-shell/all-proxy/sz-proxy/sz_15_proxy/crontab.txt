@@ -1,0 +1,4 @@
+
+*/5 * * * * root /root/all-proxy/proxy-scripts/tunnel.sh > /var/log/crontab.log 2>&1
+*/5 * * * * root /root/all-proxy/sz-proxy/sz_15_proxy/check_speed15.sh >/var/log/crontab.log 2>&1
+*/5 * * * * root /root/all-proxy/sz-proxy/sz_15_proxy/proxy_alarm.sh > /var/log/crontabl.log 2>&1

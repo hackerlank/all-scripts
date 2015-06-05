@@ -1,0 +1,7 @@
+
+*/5 * * * *  root /root/all-proxy/proxy-scripts/tunnel.sh > /var/log/crontab.log 2>&1
+*/5 * * * *  root /root/all-proxy/sz-proxy/sz_16_proxy/sync_proxy_conf.sh >>/var/log/proxy/sync_proxy_conf.log
+*/5 * * * *  root /root/all-proxy/sz-proxy/sz_16_proxy/check_speed16.sh >/var/log/crontab.log 2>&1
+
+0 0  * * *  root  find /var/log/proxy/  -type f -mtime +7  2>/dev/null | xargs -I {} rm -f {}
+0 0  * * *  root  find /var/log/ -name "haproxy.log.*" -type f -mtime +7 2>/dev/null | xargs -I {} rm -fr {}

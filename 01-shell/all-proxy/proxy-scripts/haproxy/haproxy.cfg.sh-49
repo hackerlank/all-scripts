@@ -1,0 +1,177 @@
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   http://haproxy.1wt.eu/download/1.4/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     5000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /tmp/haproxy level admin
+    #stats socket /var/lib/haproxy/stats
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    #mode                    http
+    mode                    tcp
+    log                     global
+    #option                  httplog
+    option                  tcplog
+    #option                  dontlognull
+    #option http-server-close
+    #option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    #timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# main frontend which proxys to the backends
+#---------------------------------------------------------------------
+#frontend  main *:5000
+#    acl url_static       path_beg       -i /static /images /javascript /stylesheets
+#    acl url_static       path_end       -i .jpg .gif .png .css .js
+#
+#    use_backend static          if url_static
+#    default_backend             app
+frontend proxy
+    bind *:9003
+    mode tcp
+    default_backend proxy_backend
+
+frontend proxy_google
+    bind *:9004
+    mode tcp
+    default_backend proxy_backend_google
+
+#---------------------------------------------------------------------
+# static backend for serving up images, stylesheets and such
+#---------------------------------------------------------------------
+backend proxy_backend
+        mode tcp
+	balance roundrobin
+	server Singapore_aws_54.179.8.52 	127.0.0.1:10033 check
+	server Singapore_aws_175.41.188.143	127.0.0.1:10040 check
+	server Singapore-proxy-0-SG1_54.169.130.177 	127.0.0.1:20101 check
+        server Singapore-proxy-0-SG2_54.169.164.180	127.0.0.1:20102 check
+        server Singapore-proxy-0-SG3_54.169.164.67	127.0.0.1:20103 check
+        server Singapore-proxy-0-SG4_54.169.163.185	127.0.0.1:20104 check
+
+	server Singapore-proxy-2-SG1_54.169.154.19      127.0.0.1:20105 check
+        server Singapore-proxy-2-SG2_54.169.155.70      127.0.0.1:20106 check
+        server Singapore-proxy-2-SG3_54.169.154.93      127.0.0.1:20107 check
+        server Singapore-proxy-2-SG4_54.169.154.100     127.0.0.1:20108 check
+
+	server Singapore-proxy-3-SG1_52.74.139.59	127.0.0.1:20109 check
+	server Singapore-proxy-3-SG2_52.74.14.154 	127.0.0.1:20110 check
+	server Singapore-proxy-3-SG3_52.74.36.45 	127.0.0.1:20111 check
+	server Singapore-proxy-3-SG4_52.74.28.15 	127.0.0.1:20112 check
+
+	#server Tokyo-proxy-0-TYO1_54.65.75.204		127.0.0.1:20001 check
+	#server Tokyo-proxy-0-TYO2_54.65.37.233		127.0.0.1:20002 check
+	#server Tokyo-proxy-0-TYO3_54.64.23.21		127.0.0.1:20003 check
+	#server Tokyo-proxy-0-TYO4_54.64.48.101		127.0.0.1:20004 check
+
+	server Tokyo-proxy-1-TYO1_54.65.85.96           127.0.0.1:20005 check
+        server Tokyo-proxy-1-TYO2_54.64.11.236          127.0.0.1:20006 check
+        server Tokyo-proxy-1-TYO3_54.65.83.89           127.0.0.1:20007 check
+        server Tokyo-proxy-1-TYO4_54.65.75.26           127.0.0.1:20008 check
+
+	server Tokyo-proxy-2-TYO1_54.65.130.253         127.0.0.1:20009 check
+        server Tokyo-proxy-2-TYO2_54.65.130.173         127.0.0.1:20010 check
+        server Tokyo-proxy-2-TYO3_54.65.129.148         127.0.0.1:20011 check
+        server Tokyo-proxy-2-TYO4_54.65.130.209         127.0.0.1:20012 check
+	
+	server Tokyo-proxy-3-TYO1_54.65.28.127          127.0.0.1:20013 check
+        server Tokyo-proxy-3-TYO2_54.64.232.39          127.0.0.1:20014 check
+        server Tokyo-proxy-3-TYO3_54.65.20.196          127.0.0.1:20015 check
+        server Tokyo-proxy-3-TYO4_54.64.103.115         127.0.0.1:20016 check
+
+	timeout connect 600s
+        timeout server 30s
+
+backend proxy_backend_google
+        mode tcp
+        balance roundrobin
+	#balance source
+	server Singapore_aws_54.179.8.52        127.0.0.1:10033 check
+	server Singapore_aws_175.41.188.143	127.0.0.1:10040 check
+	server Singapore-proxy-0-SG1_54.169.130.177 	127.0.0.1:20101 check
+        server Singapore-proxy-0-SG2_54.169.164.180	127.0.0.1:20102 check
+        server Singapore-proxy-0-SG3_54.169.164.67	127.0.0.1:20103 check
+        server Singapore-proxy-0-SG4_54.169.163.185	127.0.0.1:20104 check
+	server Singapore-proxy-2-SG1_54.169.154.19      127.0.0.1:20105 check
+        server Singapore-proxy-2-SG2_54.169.155.70      127.0.0.1:20106 check
+        server Singapore-proxy-2-SG3_54.169.154.93      127.0.0.1:20107 check
+        server Singapore-proxy-2-SG4_54.169.154.100     127.0.0.1:20108 check
+
+	server Singapore-proxy-3-SG1_52.74.139.59	127.0.0.1:20109 check
+	server Singapore-proxy-3-SG2_52.74.14.154 	127.0.0.1:20110 check
+	server Singapore-proxy-3-SG3_52.74.36.45 	127.0.0.1:20111 check
+	server Singapore-proxy-3-SG4_52.74.28.15 	127.0.0.1:20112 check
+
+	#server Tokyo-proxy-0-TYO1_54.65.75.204		127.0.0.1:20001 check
+	#server Tokyo-proxy-0-TYO2_54.65.37.233		127.0.0.1:20002 check
+	#server Tokyo-proxy-0-TYO3_54.64.23.21		127.0.0.1:20003 check
+	#server Tokyo-proxy-0-TYO4_54.64.48.101		127.0.0.1:20004 check
+
+	server Tokyo-proxy-1-TYO1_54.65.85.96           127.0.0.1:20005 check
+        server Tokyo-proxy-1-TYO2_54.64.11.236          127.0.0.1:20006 check
+        server Tokyo-proxy-1-TYO3_54.65.83.89           127.0.0.1:20007 check
+        server Tokyo-proxy-1-TYO4_54.65.75.26           127.0.0.1:20008 check
+
+	server Tokyo-proxy-2-TYO1_54.65.130.253         127.0.0.1:20009 check
+        server Tokyo-proxy-2-TYO2_54.65.130.173         127.0.0.1:20010 check
+        server Tokyo-proxy-2-TYO3_54.65.129.148         127.0.0.1:20011 check
+        server Tokyo-proxy-2-TYO4_54.65.130.209         127.0.0.1:20012 check
+
+	server Tokyo-proxy-3-TYO1_54.65.28.127          127.0.0.1:20013 check
+        server Tokyo-proxy-3-TYO2_54.64.232.39          127.0.0.1:20014 check
+        server Tokyo-proxy-3-TYO3_54.65.20.196          127.0.0.1:20015 check
+        server Tokyo-proxy-3-TYO4_54.64.103.115         127.0.0.1:20016 check
+	timeout connect 600s
+        timeout server 30s
+#---------------------------------------------------------------------
+listen monitor
+    bind *:1080
+    mode http
+    stats uri /haproxy-status
+    stats refresh 5s
+    stats realm "password  monitor"
+    stats auth admin:xhfan
+#---------------------------------------------------------------------

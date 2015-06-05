@@ -1,0 +1,14 @@
+# By default this script does nothing.
+
+autossh -NfL *:9005:192.168.1.41:9003  -i /root/.ssh/sh_41 -p32201 httpproxy@101.231.200.238
+autossh -NfL *:9006:192.168.1.41:9004  -i /root/.ssh/sh_41 -p32201 httpproxy@101.231.200.238
+
+# for SH 联通
+#autossh -NfL *:9005:192.168.1.41:9003  -i /root/.ssh/sh_41 -p32201 httpproxy@112.64.183.142
+#autossh -NfL *:9006:192.168.1.41:9004  -i /root/.ssh/sh_41 -p32201 httpproxy@112.64.183.142
+
+#autossh -NfL *:10005:192.168.1.41:9003  -i /root/.ssh/sh_41 -p32201 httpproxy@101.231.200.238
+#autossh -NfL *:10006:192.168.1.41:9004  -i /root/.ssh/sh_41 -p32201 httpproxy@101.231.200.238
+
+autossh -NfL *:10005:192.168.0.139:9003  -i /root/.ssh/hz_139 -p32200 httpproxy@115.236.98.69
+autossh -NfL *:10006:192.168.0.139:9004  -i /root/.ssh/hz_139 -p32200 httpproxy@115.236.98.69

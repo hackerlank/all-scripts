@@ -1,0 +1,135 @@
+1. sh-proxy  ShangHai proxy
+2. sz-proxy  SuZhou proxy
+3. hz-proxy  HangZhou Proxy
+4. dg-proxy  DaGuan Proxy
+
+all-proxy/
+├── 01-shell 
+│   └── 01-wordpress
+├── aws-scripts
+├── dg-proxy (大观代理)
+├── proxy-scripts
+├── sh-proxy (上海代理)
+│   ├── sh_41_proxy
+│   └── sh_49_proxy
+└── sz-proxy (苏州代理)
+    └── sz_15_proxy
+
+all-proxy/
+├── 01-shell
+│   ├── 01-wordpress
+│   │   ├── add_new_wordpress.sh
+│   │   ├── create_db.sh
+│   │   ├── domain.conf
+│   │   └── domain.sql
+│   ├── modified_sync_erp.sh
+│   └── sync_tunnel.sh
+├── aws-scripts
+│   ├── delete-aws-ami.sh
+│   ├── ec2-associate-EIP.sh
+│   ├── rollback_to_stable.sh
+│   ├── start-ec2-instance.sh
+│   ├── stop-ec2-instance.sh
+│   └── subnet.txt
+├── dg-proxy
+│   ├── connect_sz15.sh
+│   └── proxy_dg.sh
+├── erp-scripts
+│   ├── jenkins
+│   │   ├── jjs-cronjob.sh
+│   │   ├── jjs-erp.sh
+│   │   ├── jjs-mps.sh
+│   │   ├── jjs-romeo.sh
+│   │   ├── prod-jjs-cronjob.sh
+│   │   ├── prod-jjs-erp.sh
+│   │   ├── prod-jjs-mps.sh
+│   │   └── prod-jjs-romeo.sh
+│   └── sh_51
+│       ├── deployjjshouse_cronjob.sh
+│       ├── deployjjshouse_erp.sh
+│       ├── deployjjshouse_romeo.sh
+│       ├── deploymps.sh
+│       └── deployoctopus.sh
+├── hz-proxy
+│   ├── cms_8890.sh
+│   └── speed_149.sh
+├── proxy-scripts
+│   ├── autoInstall.sh
+│   ├── change-proxy-IP.sh
+│   ├── haproxy
+│   │   ├── haproxy.cfg.sh-41
+│   │   ├── haproxy.cfg.sh-41.bak
+│   │   ├── haproxy.cfg.sh-49
+│   │   ├── haproxy.cfg.sh-49.bak
+│   │   └── haproxy.cfg.sz-15
+│   ├── hosts
+│   ├── hosts-centos
+│   ├── proxy-IPs.sql
+│   ├── tunnel-centos.sh
+│   └── tunnel.sh
+├── README
+├── rpms
+│   ├── epel-release-6-5.noarch.rpm
+│   ├── git-1.8.3.4-1.1.x86_64.rpm
+│   └── perl-Git-1.8.3.4-1.1.x86_64.rpm
+├── sh-proxy
+│   ├── deploy-haproxy.sh
+│   ├── keys_proxy
+│   │   ├── hk_xm_rsa
+│   │   ├── hk_xm_rsa.pub
+│   │   ├── id_rsa
+│   │   ├── id_rsa.pub
+│   │   ├── proxy_accout.txt
+│   │   └── test_rsa
+│   ├── kill_port.sh
+│   ├── sh_41_proxy
+│   │   ├── 19998-proxy.sh
+│   │   ├── 30001-proxy.sh
+│   │   ├── 30003-proxy.sh
+│   │   ├── 30005-proxy.sh
+│   │   ├── 30007-proxy.sh
+│   │   ├── 3120-UI.sh
+│   │   ├── check_speed41.sh
+│   │   ├── crontab.txt
+│   │   ├── monitor_proxy_port.sh
+│   │   └── proxy_alarm.sh
+│   ├── sh_49_proxy
+│   │   ├── 30001-proxy.sh
+│   │   ├── 30003-proxy.sh
+│   │   ├── 50002-proxy.sh
+│   │   ├── 50004-proxy.sh
+│   │   ├── 50006-proxy.sh
+│   │   ├── 50008-proxy.sh
+│   │   ├── 50010-proxy.sh
+│   │   ├── crontab.txt
+│   │   ├── monitor_proxy_port.sh
+│   │   ├── proxy_alarm.sh
+│   │   └── sync_proxy_conf.sh
+│   ├── sh_50
+│   │   ├── basedbdatatest-js.sh
+│   │   └── restorebasedbdatatest-js.sh
+│   ├── sh_51
+│   │   ├── connect-149.sh
+│   │   ├── git-10023.sh
+│   │   └── sh_51-rc.local
+│   └── test_port.sh
+└── sz-proxy
+    ├── kill_port.sh
+    ├── start_proxy.sh
+    ├── sz_15_proxy
+    │   ├── 10005-proxy.sh
+    │   ├── 10006-proxy.sh
+    │   ├── 9005-proxy.sh
+    │   ├── 9006-proxy.sh
+    │   ├── check_speed15.sh
+    │   ├── crontab.txt
+    │   ├── monitor_proxy_port.sh
+    │   ├── proxy_alarm.sh
+    │   └── rc.local
+    ├── sz_16_proxy
+    │   ├── check_speed16.sh
+    │   ├── crontab.txt
+    │   └── sync_proxy_conf.sh
+    └── test_port.sh
+
+20 directories, 95 files

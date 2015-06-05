@@ -1,0 +1,18 @@
+# add monitor Proxy port 
+# HangZhou Caiwu for AA DF paypal
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_41_proxy/monitor_proxy_port.sh 30001 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+# HangZhou Caiwu for Azazie paypal
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_41_proxy/monitor_proxy_port.sh 30003 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+# HangZhou for GC
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_41_proxy/monitor_proxy_port.sh 30005 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+# xumeng HK
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_41_proxy/monitor_proxy_port.sh 19998 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+
+*/5 * * * * root bash /root/all-proxy/proxy-scripts/tunnel.sh
+
+*/5 * * * * root flock -nx /tmp/check_speed41 -c "/root/all-proxy/sh-proxy/sh_41_proxy/check_speed41.sh"
+
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_41_proxy/proxy_alarm.sh > /var/log/crontabl.log 2>&1
+
+0 0  * * *  root  find /var/log/proxy/  -type f -mtime +7  2>/dev/null | xargs -I {} rm -f {}
+0 0  * * *  root  find /var/log/ -name "haproxy.log.*" -type f -mtime +7 2>/dev/null | xargs -I {} rm -fr {}

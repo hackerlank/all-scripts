@@ -1,0 +1,13 @@
+*/5 * * * * root /root/sync_proxy_conf.sh >>/var/log/proxy/sync_proxy_conf.log
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/monitor_proxy_port.sh 30003 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/monitor_proxy_port.sh 50002 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/monitor_proxy_port.sh 50004 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/monitor_proxy_port.sh 50006 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/monitor_proxy_port.sh 50008 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+# America  proxy for Hangzhou
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/monitor_proxy_port.sh 50010 >> /var/log/proxy/monitor_proxy_port.$(date +\%Y\%m\%d).log 2>&1
+
+# use for start autossh proxy
+*/5 * * * * root bash /root/all-proxy/proxy-scripts/tunnel-centos.sh
+
+*/5 * * * * root bash /root/all-proxy/sh-proxy/sh_49_proxy/proxy_alarm.sh > /var/log/crontabl.log 2>&1

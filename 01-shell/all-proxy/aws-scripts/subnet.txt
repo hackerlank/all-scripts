@@ -1,0 +1,7 @@
+"AWSSubnetId" : {
+            "us-east-1" : { "SubnetA" : "subnet-6e4f2e19", "SubnetB" : "subnet-1ad15743" },
+            "ap-southeast-1" : { "SubnetA" : "subnet-81ae78e4", "SubnetB" : "subnet-627c9615" },
+            "ap-northeast-1" : { "SubnetA" : "subnet-e7d33a90", "SubnetC" : "subnet-f57975b3" }
+        }
+"SecurityGroupIds" : [ "sg-e28d1386" ],
+"SubnetId" : { "Fn::FindInMap" : [ "AWSSubnetId", { "Ref" : "AWS::Region" }, "SubnetA" ] },

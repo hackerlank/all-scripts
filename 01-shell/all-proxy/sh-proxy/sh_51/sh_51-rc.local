@@ -1,0 +1,30 @@
+/etc/init.d/mysql start
+#登录140机器（ERP web虚拟机）
+autossh -Nnf -L 0.0.0.0:10020:192.168.0.140:32200 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#登录141机器（ERP IMG虚拟机）
+autossh -Nnf -L 0.0.0.0:10019:192.168.0.141:32200 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#登录28机器（陈磊虚拟机）
+autossh -Nnf -L 0.0.0.0:10025:192.168.0.28:32200 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#登录230机器（SVN虚拟机）
+autossh -Nnf -L 0.0.0.0:10101:192.168.0.230:32200 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#erp机器SSL web端口
+#autossh -Nnf -L 0.0.0.0:444:192.168.0.140:443 syncer@115.236.98.67 -i ~/.ssh/syncer_rsa  -p32200
+#登陆149
+autossh -Nnf -L 0.0.0.0:10022:192.168.0.149:22 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#登陆26 for git
+autossh -Nnf -L 0.0.0.0:10023:192.168.0.26:32200 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#haproxy monitor
+autossh -Nnf -L 0.0.0.0:1080:192.168.0.149:1080 syncer@115.236.98.69 -i ~/.ssh/syncer_rsa  -p32200
+#ERP VNC
+autossh -Nf  -L 0.0.0.0:59001:192.168.0.139:59001 syncer@115.236.98.69 -i /root/.ssh/syncer_rsa -p32200
+#ERPWEB VNC
+autossh -Nf  -L 0.0.0.0:59002:192.168.0.139:59002 syncer@115.236.98.69 -i /root/.ssh/syncer_rsa -p32200
+#IMG VNC
+autossh -Nf  -L 0.0.0.0:59003:192.168.0.139:59003 syncer@115.236.98.69 -i /root/.ssh/syncer_rsa -p32200
+#杭州haproxy代理监控
+autossh -Nf  -L 0.0.0.0:1082:192.168.0.149:1080 syncer@115.236.98.69 -i /root/.ssh/syncer_rsa -p32200 
+
+autossh -Nf  -L 0.0.0.0:19999:192.168.0.149:19999 syncer@115.236.98.69 -i /root/.ssh/syncer_rsa -p32200
+
+mkdir /tmp/pdf
+chmod 777 -R /tmp/pdf
