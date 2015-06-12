@@ -9,9 +9,9 @@ sed -i '$a colorscheme desert' /etc/vimrc
 sed -i '$a unset SSH_ASKPASS' /etc/bashrc
 # 修改/etc/yum.repos.d/epel.repo
 
-yum install -y haproxy
-yum install -y autossh
-yum install -y socat
+#yum install -y haproxy
+#yum install -y autossh
+#yum install -y socat
 
 
 yum install -y expat-devel
