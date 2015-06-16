@@ -1,6 +1,8 @@
 #!/bin/bash
 
 
+yum erase git -y
+
 rpm -ivh /tmp/epel-release-6-5.noarch.rpm
 
 sed -i 's/DIR\ 01;34/DIR\ 38;5;27/g' /etc/DIR_COLORS
