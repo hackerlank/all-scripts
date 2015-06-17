@@ -47,6 +47,8 @@ make
 make prefix=/usr/local install
 
 # Install the Bundler Gem:
+gem sources -r https://rubygems.org/
+gem sources -a http://ruby.taobao.org/
 gem install bundler --no-doc
 
 # Logout and login again for the $PATH to take effect. Check that ruby is properly installed with:
@@ -97,8 +99,98 @@ sed 's/^port .*/port 0/' /etc/redis.conf.orig | sudo tee /etc/redis.conf
 echo 'unixsocket /var/run/redis/redis.sock' | sudo tee -a /etc/redis.conf
 echo -e 'unixsocketperm 0770' | sudo tee -a /etc/redis.conf
 # Create the directory which contains the socket
-mkdir /var/run/redis
+mkdir -p  /var/run/redis
 chown redis:redis /var/run/redis
 chmod 755 /var/run/redis
+
+service redis start
+# Add git to the redis group:
+usermod -aG redis git
+
+# GitLab
+cd /home/git
+# Clone GitLab repository
+sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-4-stable gitlab
+
+# Go to GitLab installation folder
+cd /home/git/gitlab
+
+# Copy the example GitLab config
+sudo -u git -H cp config/gitlab.yml.example config/gitlab.yml
+
+# Update GitLab config file, follow the directions at top of file
+# sudo -u git -H editor config/gitlab.yml
+sudo -u git -H vim config/gitlab.yml
+
+# Make sure GitLab can write to the log/ and tmp/ directories
+chown -R git log/
+chown -R git tmp/
+chmod -R u+rwX log/
+chmod -R u+rwX tmp/
+
+# Create directory for satellites
+sudo -u git -H mkdir /home/git/gitlab-satellites
+chmod u+rwx,g=rx,o-rwx /home/git/gitlab-satellites
+
+# Make sure GitLab can write to the tmp/pids/ and tmp/sockets/ directories
+chmod -R u+rwX tmp/pids/
+chmod -R u+rwX tmp/sockets/
+
+# Make sure GitLab can write to the public/uploads/ directory
+chmod -R u+rwX  public/uploads
+
+# Copy the example Unicorn config
+sudo -u git -H cp config/unicorn.rb.example config/unicorn.rb
+
+# Find number of cores
+nproc
+
+# Enable cluster mode if you expect to have a high load instance
+# Ex. change amount of workers to 3 for 2GB RAM server
+# Set the number of workers to at least the number of cores
+# sudo -u git -H editor config/unicorn.rb
+sudo -u git -H vim config/unicorn.rb
+
+# Copy the example Rack attack config
+sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
+
+# Configure Git global settings for git user, useful when editing via web
+# Edit user.email according to what is set in gitlab.yml
+sudo -u git -H git config --global user.name "GitLab"
+sudo -u git -H git config --global user.email "example@example.com"
+sudo -u git -H git config --global core.autocrlf input
+
+# Configure Redis connection settings
+sudo -u git -H cp config/resque.yml.example config/resque.yml
+
+# Change the Redis socket path if you are not using the default CentOS configuration
+# sudo -u git -H editor config/resque.yml
+sudo -u git -H vim config/resque.yml
+
+# Configure GitLab DB settings
+sudo -u git cp config/database.yml.mysql config/database.yml
+# Make config/database.yml readable to git only
+sudo -u git -H chmod o-rwx config/database.yml
+
+# Install Gems
+cd /home/git/gitlab
+# Or for MySQL (note, the option says "without ... postgres")
+sudo -u git -H bundle install --deployment --without development test postgres aws
+# cd /home/git/gitlab and modified Gemfile for https://ruby.taobao.org
+# fixed Installing charlock_holmes 0.6.9.4 with native extensions
+yum install icu libicu-devel libicu
+
+
+# Install GitLab shell
+# Run the installation task for gitlab-shell (replace `REDIS_URL` if needed):
+sudo -u git -H bundle exec rake gitlab:shell:install[v2.1.0] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
+
+# By default, the gitlab-shell config is generated from your main GitLab config.
+# You can review (and modify) the gitlab-shell config as follows:
+sudo -u git -H editor /home/git/gitlab-shell/config.yml
+
+# Ensure the correct SELinux contexts are set
+# Read http://wiki.centos.org/HowTos/Network/SecuringSSH
+restorecon -Rv /home/git/.ssh
 
 
