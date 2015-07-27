@@ -176,9 +176,11 @@ sudo -u git -H chmod o-rwx config/database.yml
 cd /home/git/gitlab
 # Or for MySQL (note, the option says "without ... postgres")
 sudo -u git -H bundle install --deployment --without development test postgres aws
-# cd /home/git/gitlab and modified Gemfile for https://ruby.taobao.org
+# cd /home/git/gitlab and modified Gemfile for http://rubygems.org/
 # fixed Installing charlock_holmes 0.6.9.4 with native extensions
 yum install icu libicu-devel libicu
+# fixed Installing rugged 0.21.2 with native extensions
+yum install cmake
 
 
 # Install GitLab shell
@@ -187,10 +189,26 @@ sudo -u git -H bundle exec rake gitlab:shell:install[v2.1.0] REDIS_URL=unix:/var
 
 # By default, the gitlab-shell config is generated from your main GitLab config.
 # You can review (and modify) the gitlab-shell config as follows:
-sudo -u git -H editor /home/git/gitlab-shell/config.yml
+sudo -u git -H vim /home/git/gitlab-shell/config.yml
 
 # Ensure the correct SELinux contexts are set
 # Read http://wiki.centos.org/HowTos/Network/SecuringSSH
-restorecon -Rv /home/git/.ssh
+#restorecon -Rv /home/git/.ssh
+# Initialize Database and Activate Advanced Features
+sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
 
+# Install Init Script
+wget -O /etc/init.d/gitlab https://gitlab.com/gitlab-org/gitlab-recipes/raw/master/init/sysvinit/centos/gitlab-unicorn
+chmod +x /etc/init.d/gitlab
+chkconfig --add gitlab
+chkconfig gitlab on
 
+# Set up logrotate
+cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+# Check Application Status
+# Check if GitLab and its environment are configured correctly:
+sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
+# Compile assets
+sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
+# Start your GitLab instance
+service gitlab start
