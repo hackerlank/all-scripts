@@ -2,8 +2,13 @@
 
 # install GitLab on CentOS6.5
 
+#-----------------------------------------------------------------------------#
+
+# 1. Installing the operating system (CentOS 6.5 Minimal)
+
+# 1.1 Install yum 
 # Download the GPG key for EPEL repository from fedoraproject and install it on your system:
-wget -O /etc/yum.repos.d/PUIAS_6_computational.repo https://gitlab.com/gitlab-org/gitlab-recipes/raw/master/install/centos/PUIAS_6_computational.repo
+wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 https://www.fedoraproject.org/static/0608B895.txt
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
 
 # Verify that the key got installed successfully
@@ -23,9 +28,12 @@ rpm -qa gpg*
 # Verify that the EPEL and PUIAS Computational repositories are enabled as shown below: 
 yum repolist
 
+# If you can't see them listed, use the folowing command (from yum-utils package) to enable them:
 # yum-config-manager --enable epel --enable PUIAS_6_computational
 
-# Install the required tools for GitLab
+#-----------------------------------------------------------------------------#
+
+# 1.2 Install the required tools for GitLab
 
 #yum -y update
 #yum -y groupinstall 'Development Tools'
@@ -34,10 +42,17 @@ yum repolist
 yum groupinstall 'Development Tools'
 yum install readline readline-devel ncurses-devel gdbm-devel glibc-devel tcl-devel openssl-devel curl-devel expat-devel db4-devel byacc sqlite-devel libyaml libyaml-devel libffi libffi-devel libxml2 libxml2-devel libxslt libxslt-devel libicu libicu-devel system-config-firewall-tui redis sudo wget crontabs logwatch logrotate perl-Time-HiRes git cmake libcom_err-devel.i686 libcom_err-devel.x86_64
 
-# Install mail server 
+# For reStructuredText markup language support, install required package:
+#yum -y install python-docutils
+yum install python-docutils
+#-----------------------------------------------------------------------------#
+
+# 1.3 Install mail server 
 #yum -y install postfix
 yum  install postfix
+#-----------------------------------------------------------------------------#
 
+# 2. Ruby
 # Download Ruby and compile it:
 mkdir /tmp/ruby && cd /tmp/ruby
 curl --progress ftp://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.2.tar.gz | tar xz
@@ -52,9 +67,9 @@ gem sources -a http://ruby.taobao.org/
 gem install bundler --no-doc
 
 # Logout and login again for the $PATH to take effect. Check that ruby is properly installed with:
-exit 0
+#-----------------------------------------------------------------------------#
 
-# System Users
+# 3. System Users
 # Create a git user for Gitlab:
 adduser --system --shell /bin/bash --comment 'GitLab' --create-home --home-dir /home/git/ git
 # Important: In order to include /usr/local/bin to git user's PATH, one way is to edit the sudoers file. As root run:
@@ -62,7 +77,9 @@ adduser --system --shell /bin/bash --comment 'GitLab' --create-home --home-dir /
 # Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin
 # Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 
-# Database
+#-----------------------------------------------------------------------------#
+
+# 4. Database
 # Install mysql and enable the mysqld service to start on boot:
 #yum install -y mysql-server mysql-devel
 yum install mysql-server mysql-devel
@@ -85,6 +102,7 @@ mysql -u root -p
 # Try connecting to the new database with the new user:
 # sudo -u git -H mysql -u git -p -D gitlabhq_production
 
+#-----------------------------------------------------------------------------#
 
 # 5. Redis
 #Make sure redis is started on boot:
@@ -107,7 +125,9 @@ service redis start
 # Add git to the redis group:
 usermod -aG redis git
 
-# GitLab
+#-----------------------------------------------------------------------------#
+
+# 6. GitLab
 cd /home/git
 # Clone GitLab repository
 sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-4-stable gitlab
@@ -185,7 +205,9 @@ yum install cmake
 
 # Install GitLab shell
 # Run the installation task for gitlab-shell (replace `REDIS_URL` if needed):
-sudo -u git -H bundle exec rake gitlab:shell:install[v2.1.0] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
+# install gitlab-shell use v2.0.1
+#sudo -u git -H bundle exec rake gitlab:shell:install[v2.1.0] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
+sudo -u git -H bundle exec rake gitlab:shell:install[v2.0.1] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
 
 # By default, the gitlab-shell config is generated from your main GitLab config.
 # You can review (and modify) the gitlab-shell config as follows:
@@ -212,3 +234,7 @@ sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
 sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
 # Start your GitLab instance
 service gitlab start
+
+#-----------------------------------------------------------------------------#
+
+# 7. Configure the web server
