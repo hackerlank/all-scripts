@@ -131,8 +131,10 @@ usermod -aG redis git
 
 # 6. GitLab
 cd /home/git
-# Clone GitLab repository
+# 6.1 Clone GitLab repository
 sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-4-stable gitlab
+
+# 6.2 Configure it
 
 # Go to GitLab installation folder
 cd /home/git/gitlab
@@ -189,12 +191,12 @@ sudo -u git -H cp config/resque.yml.example config/resque.yml
 # sudo -u git -H editor config/resque.yml
 sudo -u git -H vim config/resque.yml
 
-# Configure GitLab DB settings
+# 6.3 Configure GitLab DB settings
 sudo -u git cp config/database.yml.mysql config/database.yml
 # Make config/database.yml readable to git only
 sudo -u git -H chmod o-rwx config/database.yml
 
-# Install Gems
+# 6.4 Install Gems
 cd /home/git/gitlab
 # Or for MySQL (note, the option says "without ... postgres")
 sudo -u git -H bundle install --deployment --without development test postgres aws
@@ -205,7 +207,7 @@ yum install icu libicu-devel libicu
 yum install cmake
 
 
-# Install GitLab shell
+# 6.5 Install GitLab shell
 # Run the installation task for gitlab-shell (replace `REDIS_URL` if needed):
 # install gitlab-shell use v2.0.1
 #sudo -u git -H bundle exec rake gitlab:shell:install[v2.1.0] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
@@ -217,26 +219,47 @@ sudo -u git -H vim /home/git/gitlab-shell/config.yml
 
 # Ensure the correct SELinux contexts are set
 # Read http://wiki.centos.org/HowTos/Network/SecuringSSH
-#restorecon -Rv /home/git/.ssh
-# Initialize Database and Activate Advanced Features
+# restorecon -Rv /home/git/.ssh
+
+# 6.6  Initialize Database and Activate Advanced Features
 sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
 
-# Install Init Script
+# 6.7 Install Init Script
 wget -O /etc/init.d/gitlab https://gitlab.com/gitlab-org/gitlab-recipes/raw/master/init/sysvinit/centos/gitlab-unicorn
 chmod +x /etc/init.d/gitlab
 chkconfig --add gitlab
 chkconfig gitlab on
 
-# Set up logrotate
+# 6.8 Set up logrotate
 cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
-# Check Application Status
+
+# 6.9 Check Application Status
 # Check if GitLab and its environment are configured correctly:
 sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
-# Compile assets
+
+# 6.10 Compile assets
 sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
-# Start your GitLab instance
+# 6.11 Start your GitLab instance
 service gitlab start
 
 #-----------------------------------------------------------------------------#
 
 # 7. Configure the web server
+# 7.1 Nginx
+yum -y install nginx
+chkconfig nginx on
+wget -O /etc/nginx/conf.d/gitlab.conf https://gitlab.com/gitlab-org/gitlab-ce/raw/master/lib/support/nginx/gitlab-ssl
+# Edit /etc/nginx/conf.d/gitlab.conf and replace git.example.com with your FQDN. Make sure to read the comments in order to properly set up SSL
+# Add nginx user to git group:
+usermod -a -G git nginx
+chmod g+rx /home/git/
+# Finally start nginx with:
+service nginx start
+# Test Configuration
+nginx -t
+
+# 8. Double-check Application Status
+# To make sure you didn't miss anything run a more thorough check with:
+cd /home/git/gitlab
+sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
+
