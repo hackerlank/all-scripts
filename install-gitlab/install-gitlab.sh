@@ -45,11 +45,12 @@ yum install readline readline-devel ncurses-devel gdbm-devel glibc-devel tcl-dev
 # For reStructuredText markup language support, install required package:
 #yum -y install python-docutils
 yum install python-docutils
+
 #-----------------------------------------------------------------------------#
 
 # 1.3 Install mail server 
-#yum -y install postfix
-yum  install postfix
+yum -y install postfix
+
 #-----------------------------------------------------------------------------#
 
 # 2. Ruby
@@ -73,8 +74,9 @@ gem install bundler --no-doc
 # Create a git user for Gitlab:
 adduser --system --shell /bin/bash --comment 'GitLab' --create-home --home-dir /home/git/ git
 # Important: In order to include /usr/local/bin to git user's PATH, one way is to edit the sudoers file. As root run:
-# visudo
+visudo
 # Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin
+# add 
 # Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 
 #-----------------------------------------------------------------------------#
@@ -91,16 +93,16 @@ mysql_secure_installation
 mysql -u root -p
 
 # Create a user for GitLab (change $password in the command below to a real password you pick):
-# CREATE USER 'git'@'localhost' IDENTIFIED BY '$password';
+mysql> CREATE USER 'git'@'localhost' IDENTIFIED BY '$password';
 # Ensure you can use the InnoDB engine which is necessary to support long indexes. If this fails, check your MySQL config files (e.g. /etc/mysql/*.cnf, /etc/mysql/conf.d/*) for the setting "innodb = off".
 
-# SET storage_engine=INNODB;
+mysql> SET storage_engine=INNODB;
 # Create the GitLab production database:
-# CREATE DATABASE IF NOT EXISTS `gitlabhq_production` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
+mysql> CREATE DATABASE IF NOT EXISTS `gitlabhq_production` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
 # Grant the GitLab user necessary permissions on the table:
-# GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `gitlabhq_production`.* TO 'git'@'localhost';
+mysql> GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `gitlabhq_production`.* TO 'git'@'localhost';
 # Try connecting to the new database with the new user:
-# sudo -u git -H mysql -u git -p -D gitlabhq_production
+sudo -u git -H mysql -u git -p -D gitlabhq_production
 
 #-----------------------------------------------------------------------------#
 
