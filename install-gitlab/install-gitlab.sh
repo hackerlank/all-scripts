@@ -144,6 +144,7 @@ sudo -u git -H cp config/gitlab.yml.example config/gitlab.yml
 
 # Update GitLab config file, follow the directions at top of file
 # sudo -u git -H editor config/gitlab.yml
+# signup_enabled: true  for user sign up
 sudo -u git -H vim config/gitlab.yml
 
 # Make sure GitLab can write to the log/ and tmp/ directories
@@ -192,19 +193,32 @@ sudo -u git -H cp config/resque.yml.example config/resque.yml
 sudo -u git -H vim config/resque.yml
 
 # 6.3 Configure GitLab DB settings
+# MySQL only:
 sudo -u git cp config/database.yml.mysql config/database.yml
 # Make config/database.yml readable to git only
 sudo -u git -H chmod o-rwx config/database.yml
 
+# MySQL and remote PostgreSQL only:
+# Update username/password in config/database.yml.
+# You only need to adapt the production settings (first part).
+# If you followed the database guide then please do as follows:
+# Change 'secure password' with the value you have given to $password
+# You can keep the double quotes around the password
+# sudo -u git -H editor config/database.yml
+sudo -u git -H vim config/database.yml
+
 # 6.4 Install Gems
 cd /home/git/gitlab
-# Or for MySQL (note, the option says "without ... postgres")
-sudo -u git -H bundle install --deployment --without development test postgres aws
-# cd /home/git/gitlab and modified Gemfile for http://rubygems.org/
+bundle -v
+# NOTE: As of bundler 1.5.2, you can invoke bundle install -jN (where N the number of your processor cores) and enjoy the parallel gems installation with measurable difference in completion time (~60% faster). Check the number of your cores with nproc. For more information check this post. First make sure you have bundler >= 1.5.2 (run bundle -v) as it addresses some issues that were fixed in 1.5.2
 # fixed Installing charlock_holmes 0.6.9.4 with native extensions
 yum install icu libicu-devel libicu
 # fixed Installing rugged 0.21.2 with native extensions
 yum install cmake
+# cd /home/git/gitlab and modified Gemfile for http://rubygems.org/
+sudo -u git -H vim Gemfile  # https://rubygems.org/  ---> http://rubygems.org/
+# Or for MySQL (note, the option says "without ... postgres")
+sudo -u git -H bundle install --deployment --without development test postgres aws
 
 
 # 6.5 Install GitLab shell
@@ -223,11 +237,16 @@ sudo -u git -H vim /home/git/gitlab-shell/config.yml
 
 # 6.6  Initialize Database and Activate Advanced Features
 sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
+# Type yes to create the database. When done you see Administrator account created:.
+# Note: You can set the Administrator password by supplying it in environmental variable GITLAB_ROOT_PASSWORD, eg.:
+# sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production GITLAB_ROOT_PASSWORD=newpassword
 
 # 6.7 Install Init Script
+# Download the init script (will be /etc/init.d/gitlab):
 wget -O /etc/init.d/gitlab https://gitlab.com/gitlab-org/gitlab-recipes/raw/master/init/sysvinit/centos/gitlab-unicorn
 chmod +x /etc/init.d/gitlab
 chkconfig --add gitlab
+# Make GitLab start on boot:
 chkconfig gitlab on
 
 # 6.8 Set up logrotate
@@ -239,6 +258,7 @@ sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
 
 # 6.10 Compile assets
 sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
+
 # 6.11 Start your GitLab instance
 service gitlab start
 
