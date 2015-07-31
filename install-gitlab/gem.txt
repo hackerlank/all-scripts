@@ -1,0 +1,820 @@
+sudo -u git -H bundle install --deployment --without development test postgres aws
+Fetching gem metadata from http://rubygems.org/........
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Installing rake 10.3.2
+Installing RedCloth 4.2.9 with native extensions
+Installing ace-rails-ap 2.0.1
+Installing i18n 0.6.11
+Using json 1.8.1
+Installing minitest 5.3.5
+Installing thread_safe 0.3.4
+Installing tzinfo 1.2.2
+Installing activesupport 4.1.1
+Installing builder 3.2.2
+Installing erubis 2.7.0
+Installing actionview 4.1.1
+Installing rack 1.5.2
+Installing rack-test 0.6.2
+Installing actionpack 4.1.1
+Installing mime-types 1.25.1
+Installing polyglot 0.3.4
+Installing treetop 1.4.15
+Installing mail 2.5.4
+Installing actionmailer 4.1.1
+Installing activemodel 4.1.1
+Installing arel 5.0.1.20140414130214
+Installing activerecord 4.1.1
+Using bundler 1.10.6
+Installing thor 0.19.1
+Installing railties 4.1.1
+Installing hike 1.2.3
+Installing multi_json 1.10.1
+Installing tilt 1.4.1
+Installing sprockets 2.11.0
+Installing sprockets-rails 2.1.3
+Installing rails 4.1.1
+Installing acts-as-taggable-on 2.4.1
+Installing addressable 2.3.5
+Installing asciidoctor 0.1.4
+Installing descendants_tracker 0.0.3
+Installing ice_nine 0.10.0
+Installing axiom-types 0.0.5
+Installing bcrypt 3.1.7 with native extensions
+Installing sass 3.2.19
+Installing bootstrap-sass 3.0.3.0
+Installing carrierwave 0.9.0
+Installing timers 1.1.0
+Installing celluloid 0.15.2
+Installing charlock_holmes 0.6.9.4 with native extensions
+Installing coercible 1.0.0
+Installing coffee-script-source 1.6.3
+Installing execjs 2.0.2
+Installing coffee-script 2.2.0
+Installing coffee-rails 4.0.1
+Installing colored 1.2
+Installing connection_pool 1.2.0
+Installing creole 0.3.8
+Installing d3_rails 3.1.10
+Installing default_value_for 3.0.0
+Installing orm_adapter 0.5.0
+Installing warden 1.2.3
+Installing devise 3.2.4
+Installing devise-async 0.9.0
+Installing diff-lcs 1.2.5
+Installing diffy 3.0.3
+Installing dotenv 0.9.0
+Installing dropzonejs-rails 0.4.14
+Installing emoji 1.0.1
+Installing enumerize 0.7.0
+Installing equalizer 0.0.8
+Installing escape_utils 0.2.4 with native extensions
+Installing eventmachine 1.0.3 with native extensions
+Installing excon 0.32.1
+Installing expression_parser 0.9.0
+Installing multipart-post 1.2.0
+Installing faraday 0.8.9
+Installing faraday_middleware 0.9.0
+Installing formatador 0.2.4
+Installing net-ssh 2.8.0
+Installing net-scp 1.1.2
+Installing fog-core 1.21.1
+Installing fog-json 1.0.0
+Installing fog-brightbox 0.0.1
+Installing mini_portile 0.6.0
+Installing nokogiri 1.6.2.1 with native extensions
+Building nokogiri using packaged libraries.
+Building libxml2-2.8.0 for nokogiri with the following patches applied:
+	- 0001-Fix-parser-local-buffers-size-problems.patch
+	- 0002-Fix-entities-local-buffers-size-problems.patch
+	- 0003-Fix-an-error-in-previous-commit.patch
+	- 0004-Fix-potential-out-of-bound-access.patch
+	- 0005-Detect-excessive-entities-expansion-upon-replacement.patch
+	- 0006-Do-not-fetch-external-parsed-entities.patch
+	- 0007-Enforce-XML_PARSER_EOF-state-handling-through-the-pa.patch
+	- 0008-Improve-handling-of-xmlStopParser.patch
+	- 0009-Fix-a-couple-of-return-without-value.patch
+	- 0010-Keep-non-significant-blanks-node-in-HTML-parser.patch
+	- 0011-Do-not-fetch-external-parameter-entities.patch
+************************************************************************
+IMPORTANT!  Nokogiri builds and uses a packaged version of libxml2.
+
+If this is a concern for you and you want to use the system library
+instead, abort this installation process and reinstall nokogiri as
+follows:
+
+    gem install nokogiri -- --use-system-libraries
+
+If you are using Bundler, tell it to use the option:
+
+    bundle config build.nokogiri --use-system-libraries
+    bundle install
+
+However, note that nokogiri does not necessarily support all versions
+of libxml2.
+
+For example, libxml2-2.9.0 and higher are currently known to be broken
+and thus unsupported by nokogiri, due to compatibility problems and
+XPath optimization bugs.
+************************************************************************
+Building libxslt-1.1.28 for nokogiri with the following patches applied:
+	- 0001-Adding-doc-update-related-to-1.1.28.patch
+	- 0002-Fix-a-couple-of-places-where-f-printf-parameters-wer.patch
+	- 0003-Initialize-pseudo-random-number-generator-with-curre.patch
+	- 0004-EXSLT-function-str-replace-is-broken-as-is.patch
+	- 0006-Fix-str-padding-to-work-with-UTF-8-strings.patch
+	- 0007-Separate-function-for-predicate-matching-in-patterns.patch
+	- 0008-Fix-direct-pattern-matching.patch
+	- 0009-Fix-certain-patterns-with-predicates.patch
+	- 0010-Fix-handling-of-UTF-8-strings-in-EXSLT-crypto-module.patch
+	- 0013-Memory-leak-in-xsltCompileIdKeyPattern-error-path.patch
+	- 0014-Fix-for-bug-436589.patch
+	- 0015-Fix-mkdir-for-mingw.patch
+************************************************************************
+IMPORTANT!  Nokogiri builds and uses a packaged version of libxslt.
+
+If this is a concern for you and you want to use the system library
+instead, abort this installation process and reinstall nokogiri as
+follows:
+
+    gem install nokogiri -- --use-system-libraries
+
+If you are using Bundler, tell it to use the option:
+
+    bundle config build.nokogiri --use-system-libraries
+    bundle install
+************************************************************************
+Installing fog 1.21.0
+Installing font-awesome-rails 4.2.0.0
+Installing foreman 0.63.0
+Installing rugged 0.21.2 with native extensions
+Installing gemnasium-gitlab-service 0.2.2
+Installing github-markup 1.1.0
+Installing posix-spawn 0.3.9 with native extensions
+Installing gitlab-grit 2.6.12
+Installing gitlab-flowdock-git-hook 0.4.2.2
+Installing gitlab-grack 2.0.0.pre
+Installing gitlab-linguist 3.0.0
+Installing gitlab_emoji 0.0.1.1
+Installing gitlab_git 7.0.0.rc12
+Installing gitlab_meta 7.0
+Installing net-ldap 0.7.0
+Installing hashie 2.1.2
+Installing omniauth 1.1.4
+Installing pyu-ruby-sasl 0.0.3.3
+Installing rubyntlm 0.1.1
+Installing gitlab_omniauth-ldap 1.1.0
+Installing rouge 1.3.3
+Installing sanitize 2.1.0
+Installing stringex 2.5.1
+Installing gollum-lib 3.0.0
+Installing gon 5.0.1
+Installing multi_xml 0.5.5
+Installing rack-accept 0.4.5
+Installing rack-mount 0.8.3
+Installing virtus 1.0.1
+Installing grape 0.6.1
+Installing grape-entity 0.4.2
+Installing haml 4.0.5
+Installing haml-rails 0.5.3
+Installing httparty 0.13.0
+Installing hipchat 0.14.0
+Installing html-pipeline 1.11.0
+Installing html-pipeline-gitlab 0.1.5
+Installing http_parser.rb 0.5.3 with native extensions
+Installing httpauth 0.2.1
+Installing jquery-atwho-rails 0.3.3
+Installing jquery-rails 3.1.0
+Installing jquery-scrollto-rails 1.4.3
+Installing turbolinks 2.0.0
+Installing jquery-turbolinks 2.0.1
+Installing jquery-ui-rails 4.2.1
+Installing jwt 0.1.13
+Installing kaminari 0.15.1
+Installing kgio 2.8.1 with native extensions
+
+Connection closed by foreign host.
+
+Disconnected from remote host(BLJ-90.205) at 11:59:39.
+
+Type `help' to learn how to use Xshell prompt.
+[c:\~]$ 
+
+Connecting to 192.168.90.205:22...
+Connection established.
+To escape to local shell, press 'Ctrl+Alt+]'.
+
+Last login: Wed Jul 29 09:57:59 2015 from 10.2.254.159
+Copyright(c) 2005-2011, QiZhi Technologies. All Rights Reserved.
+License granted to SINOLINK SECURITIES CO., LTD, from 2015-03-28 to 2037-12-31.
+
+
+ 1: CDN             
+ 2: ilo????     
+ 3: Jenkins+gitlab  
+ 4: pc???¡ì±??? 
+ 5: YJBAPI1.1\1.2   
+ 6: ?????        
+ 7: ???¡ì0         
+ 8: ???¡ì٫mongodb  
+ 9: ???¡ì?FS     
+10: ?§ç          
+11: ??Ù??    
+12: ??§Ý??    
+13: ¦È??     
+14: ????         
+15: ?????\???Ø?  
+16: ????¡À     
+17: ?4??         
+ 0: all
+Select group: 3
+
+ 1: JENKINS-MASTER (192.168.70.17)  
+ 2: NL-slave-174   (172.16.2.174)   
+ 3: XX-slave-208   (197.1.1.208)    XX-slave-208
+ 4: ZR-slave-155   (172.16.3.155)   ZR-slave-155
+Select server: 2
+
+Selected account: root
+
+
+SHTERM 2.6.3-35fa58f3
+Copyright (c) 2005-2011, QiZhi Technologies. All Rights Reserved.
+License granted to SINOLINK SECURITIES CO., LTD.
+Valid from 2015-03-28 to 2037-12-31.
+Last login: Wed Jul 29 10:10:33 2015 from 172.16.1.1
+[root@gitlab ~]# ps -ef|grep bundle
+root      8573  8542  0 12:01 pts/1    00:00:00 grep bundle
+[root@gitlab ~]# sudo -u git -H ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 Jun29 ?        00:00:01 /sbin/init
+root         2     0  0 Jun29 ?        00:00:00 [kthreadd]
+root         3     2  0 Jun29 ?        00:00:00 [migration/0]
+root         4     2  0 Jun29 ?        00:00:02 [ksoftirqd/0]
+root         5     2  0 Jun29 ?        00:00:00 [migration/0]
+root         6     2  0 Jun29 ?        00:00:04 [watchdog/0]
+root         7     2  0 Jun29 ?        00:00:01 [migration/1]
+root         8     2  0 Jun29 ?        00:00:00 [migration/1]
+root         9     2  0 Jun29 ?        00:00:04 [ksoftirqd/1]
+root        10     2  0 Jun29 ?        00:00:04 [watchdog/1]
+root        11     2  0 Jun29 ?        00:00:00 [migration/2]
+root        12     2  0 Jun29 ?        00:00:00 [migration/2]
+root        13     2  0 Jun29 ?        00:00:01 [ksoftirqd/2]
+root        14     2  0 Jun29 ?        00:00:04 [watchdog/2]
+root        15     2  0 Jun29 ?        00:00:01 [migration/3]
+root        16     2  0 Jun29 ?        00:00:00 [migration/3]
+root        17     2  0 Jun29 ?        00:00:01 [ksoftirqd/3]
+root        18     2  0 Jun29 ?        00:00:04 [watchdog/3]
+root        19     2  0 Jun29 ?        00:01:20 [events/0]
+root        20     2  0 Jun29 ?        00:01:23 [events/1]
+root        21     2  0 Jun29 ?        00:01:14 [events/2]
+root        22     2  0 Jun29 ?        00:01:39 [events/3]
+root        23     2  0 Jun29 ?        00:00:00 [cgroup]
+root        24     2  0 Jun29 ?        00:00:00 [khelper]
+root        25     2  0 Jun29 ?        00:00:00 [netns]
+root        26     2  0 Jun29 ?        00:00:00 [async/mgr]
+root        27     2  0 Jun29 ?        00:00:00 [pm]
+root        28     2  0 Jun29 ?        00:00:09 [sync_supers]
+root        29     2  0 Jun29 ?        00:00:13 [bdi-default]
+root        30     2  0 Jun29 ?        00:00:00 [kintegrityd/0]
+root        31     2  0 Jun29 ?        00:00:00 [kintegrityd/1]
+root        32     2  0 Jun29 ?        00:00:00 [kintegrityd/2]
+root        33     2  0 Jun29 ?        00:00:00 [kintegrityd/3]
+root        34     2  0 Jun29 ?        00:00:04 [kblockd/0]
+root        35     2  0 Jun29 ?        00:00:03 [kblockd/1]
+root        36     2  0 Jun29 ?        00:00:04 [kblockd/2]
+root        37     2  0 Jun29 ?        00:00:03 [kblockd/3]
+root        38     2  0 Jun29 ?        00:00:00 [kacpid]
+root        39     2  0 Jun29 ?        00:00:00 [kacpi_notify]
+root        40     2  0 Jun29 ?        00:00:00 [kacpi_hotplug]
+root        41     2  0 Jun29 ?        00:00:00 [ata_aux]
+root        42     2  0 Jun29 ?        00:12:30 [ata_sff/0]
+root        43     2  0 Jun29 ?        00:10:00 [ata_sff/1]
+root        44     2  0 Jun29 ?        00:01:53 [ata_sff/2]
+root        45     2  0 Jun29 ?        00:01:54 [ata_sff/3]
+root        46     2  0 Jun29 ?        00:00:00 [ksuspend_usbd]
+root        47     2  0 Jun29 ?        00:00:00 [khubd]
+root        48     2  0 Jun29 ?        00:00:00 [kseriod]
+root        49     2  0 Jun29 ?        00:00:00 [md/0]
+root        50     2  0 Jun29 ?        00:00:00 [md/1]
+root        51     2  0 Jun29 ?        00:00:00 [md/2]
+root        52     2  0 Jun29 ?        00:00:00 [md/3]
+root        53     2  0 Jun29 ?        00:00:00 [md_misc/0]
+root        54     2  0 Jun29 ?        00:00:00 [md_misc/1]
+root        55     2  0 Jun29 ?        00:00:00 [md_misc/2]
+root        56     2  0 Jun29 ?        00:00:00 [md_misc/3]
+root        57     2  0 Jun29 ?        00:00:00 [linkwatch]
+root        58     2  0 Jun29 ?        00:00:01 [khungtaskd]
+root        59     2  0 Jun29 ?        00:00:00 [kswapd0]
+root        60     2  0 Jun29 ?        00:00:00 [ksmd]
+root        61     2  0 Jun29 ?        00:00:06 [khugepaged]
+root        62     2  0 Jun29 ?        00:00:00 [aio/0]
+root        63     2  0 Jun29 ?        00:00:00 [aio/1]
+root        64     2  0 Jun29 ?        00:00:00 [aio/2]
+root        65     2  0 Jun29 ?        00:00:00 [aio/3]
+root        66     2  0 Jun29 ?        00:00:00 [crypto/0]
+root        67     2  0 Jun29 ?        00:00:00 [crypto/1]
+root        68     2  0 Jun29 ?        00:00:00 [crypto/2]
+root        69     2  0 Jun29 ?        00:00:00 [crypto/3]
+root        74     2  0 Jun29 ?        00:00:00 [kthrotld/0]
+root        75     2  0 Jun29 ?        00:00:00 [kthrotld/1]
+root        76     2  0 Jun29 ?        00:00:00 [kthrotld/2]
+root        77     2  0 Jun29 ?        00:00:00 [kthrotld/3]
+root        78     2  0 Jun29 ?        00:00:00 [pciehpd]
+root        80     2  0 Jun29 ?        00:00:00 [kpsmoused]
+root        81     2  0 Jun29 ?        00:00:00 [usbhid_resumer]
+root       111     2  0 Jun29 ?        00:00:00 [kstriped]
+root       192     2  0 Jun29 ?        00:00:00 [scsi_eh_0]
+root       193     2  0 Jun29 ?        00:16:39 [scsi_eh_1]
+root       203     2  0 Jun29 ?        00:00:00 [scsi_eh_2]
+root       204     2  0 Jun29 ?        00:00:00 [vmw_pvscsi_wq_2]
+root       317     2  0 Jun29 ?        00:00:25 [jbd2/sda3-8]
+root       318     2  0 Jun29 ?        00:00:00 [ext4-dio-unwrit]
+root       403     1  0 Jun29 ?        00:00:00 /sbin/udevd -d
+root       706     2  0 Jun29 ?        00:00:49 [vmmemctl]
+root       872   403  0 Jun29 ?        00:00:00 /sbin/udevd -d
+root       907     2  0 Jun29 ?        00:00:00 [jbd2/sda1-8]
+root       908     2  0 Jun29 ?        00:00:00 [ext4-dio-unwrit]
+root       996     2  0 Jun29 ?        00:00:01 [kauditd]
+root      1134     1  0 Jul25 ?        00:00:03 sshd: root@notty 
+root      1144     1  0 Jun29 ?        00:00:08 auditd
+root      1162     1  0 Jun29 ?        00:00:00 /sbin/portreserve
+root      1169     1  0 Jun29 ?        00:00:05 /sbin/rsyslogd -i /var/run/syslogd.pid -c 5
+rpc       1187     1  0 Jun29 ?        00:00:04 rpcbind
+root      1238  1134  0 Jul25 ?        00:00:00 bash -c cd "/tmp" && java  -jar slave.jar
+root      1258  1238  0 Jul25 ?        00:04:32 java -jar slave.jar
+dbus      1281     1  0 Jun29 ?        00:00:00 dbus-daemon --system
+rpcuser   1299     1  0 Jun29 ?        00:00:00 rpc.statd
+root      1339     1  0 Jun29 ?        00:00:00 /usr/sbin/acpid
+68        1348     1  0 Jun29 ?        00:00:17 hald
+root      1349  1348  0 Jun29 ?        00:00:00 hald-runner
+root      1389  1349  0 Jun29 ?        00:00:00 hald-addon-input: Listening on /dev/input/event2 /dev/input/event0
+root      1391  1349  0 Jun29 ?        00:20:24 hald-addon-storage: polling /dev/sr0 (every 2 sec)
+68        1396  1349  0 Jun29 ?        00:00:00 hald-addon-acpi: listening on acpid socket /var/run/acpid.socket
+root      1411   403  0 Jun29 ?        00:00:00 /sbin/udevd -d
+root      1417     1  0 Jun29 ?        00:00:41 automount --pid-file /var/run/autofs.pid
+root      1433     1  0 Jun29 ?        00:00:00 /usr/sbin/mcelog --daemon
+root      1453     1  0 Jun29 ?        00:00:00 xinetd -stayalive -pidfile /var/run/xinetd.pid
+root      1475     1  0 Jun29 ?        00:00:00 /usr/sbin/abrtd
+root      1483     1  0 Jun29 ?        00:00:18 crond
+root      1494     1  0 Jun29 ?        00:00:00 /usr/sbin/atd
+root      1502     1  0 Jun29 ?        00:00:00 /usr/bin/rhsmcertd
+root      1515     1  0 Jun29 ?        00:00:03 /usr/sbin/certmonger -S -p /var/run/certmonger.pid
+root      1542     1  0 Jun29 ?        00:00:00 login -- root     
+root      1544     1  0 Jun29 tty2     00:00:00 /sbin/mingetty /dev/tty2
+root      1546     1  0 Jun29 tty3     00:00:00 /sbin/mingetty /dev/tty3
+root      1548     1  0 Jun29 tty4     00:00:00 /sbin/mingetty /dev/tty4
+root      1550     1  0 Jun29 tty5     00:00:00 /sbin/mingetty /dev/tty5
+root      1552     1  0 Jun29 tty6     00:00:00 /sbin/mingetty /dev/tty6
+root      1556     1  0 Jun29 ?        00:00:00 /usr/sbin/console-kit-daemon --no-daemon
+root      1623  1542  0 Jun29 tty1     00:00:00 -bash
+root      8540 14855  0 12:01 ?        00:00:00 sshd: root@pts/1 
+root      8542  8540  0 12:01 pts/1    00:00:00 -bash
+root      8576  8542  0 12:01 pts/1    00:00:00 sudo -u git -H ps -ef
+git       8577  8576  0 12:01 pts/1    00:00:00 ps -ef
+root     14855     1  0 Jul28 ?        00:00:00 /usr/sbin/sshd
+root     15019     2  0 Jul20 ?        00:00:12 [flush-8:0]
+root     17212 14855  0 08:21 ?        00:00:00 sshd: root@pts/0 
+root     17214 17212  0 08:21 pts/0    00:00:00 -bash
+root     17698 14855  0 10:10 ?        00:00:00 sshd: root@pts/3 
+root     17700 17698  0 10:10 pts/3    00:00:00 -bash
+root     17731 17700  0 10:11 pts/3    00:00:00 ssh Administrator@172.16.8.103
+root     28138     1  0 Jul28 ?        00:00:00 /bin/sh /usr/bin/mysqld_safe --datadir=/var/lib/mysql --socket=/var/lib/mysql/m
+mysql    28240 28138  0 Jul28 ?        00:00:23 /usr/libexec/mysqld --basedir=/usr --datadir=/var/lib/mysql --user=mysql --log-
+redis    28429     1  0 Jul28 ?        00:00:20 /usr/sbin/redis-server /etc/redis.conf
+root     28803 14855  0 Jul28 ?        00:00:00 sshd: root@pts/4 
+root     28805 28803  0 Jul28 pts/4    00:00:00 -bash
+[root@gitlab ~]# sudo -u git -H ps -ef|grep bundle
+root      8579  8542  0 12:01 pts/1    00:00:00 grep bundle
+[root@gitlab ~]# cd /home/git/gitlab
+[root@gitlab gitlab]# ls
+app        config           db        Gemfile               Guardfile  log             Procfile  README.md  vendor
+bin        config.ru        doc       Gemfile.lock          lib        MAINTENANCE.md  public    spec       VERSION
+CHANGELOG  CONTRIBUTING.md  features  GITLAB_SHELL_VERSION  LICENSE    PROCESS.md      Rakefile  tmp
+[root@gitlab gitlab]# sudo -u git -H bundle install --deployment --without development test postgres aws
+Fetching gem metadata from http://rubygems.org/........
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Using rake 10.3.2
+Using RedCloth 4.2.9
+Using ace-rails-ap 2.0.1
+Using i18n 0.6.11
+Using json 1.8.1
+Using minitest 5.3.5
+Using thread_safe 0.3.4
+Using tzinfo 1.2.2
+Using activesupport 4.1.1
+Using builder 3.2.2
+Using erubis 2.7.0
+Using actionview 4.1.1
+Using rack 1.5.2
+Using rack-test 0.6.2
+Using actionpack 4.1.1
+Using mime-types 1.25.1
+Using polyglot 0.3.4
+Using treetop 1.4.15
+Using mail 2.5.4
+Using actionmailer 4.1.1
+Using activemodel 4.1.1
+Using arel 5.0.1.20140414130214
+Using activerecord 4.1.1
+Using bundler 1.10.6
+Using thor 0.19.1
+Using railties 4.1.1
+Using hike 1.2.3
+Using multi_json 1.10.1
+Using tilt 1.4.1
+Using sprockets 2.11.0
+Using sprockets-rails 2.1.3
+Using rails 4.1.1
+Using acts-as-taggable-on 2.4.1
+Using addressable 2.3.5
+Using asciidoctor 0.1.4
+Using descendants_tracker 0.0.3
+Using ice_nine 0.10.0
+Using axiom-types 0.0.5
+Using bcrypt 3.1.7
+Using sass 3.2.19
+Using bootstrap-sass 3.0.3.0
+Using carrierwave 0.9.0
+Using timers 1.1.0
+Using celluloid 0.15.2
+Using charlock_holmes 0.6.9.4
+Using coercible 1.0.0
+Using coffee-script-source 1.6.3
+Using execjs 2.0.2
+Using coffee-script 2.2.0
+Using coffee-rails 4.0.1
+Using colored 1.2
+Using connection_pool 1.2.0
+Using creole 0.3.8
+Using d3_rails 3.1.10
+Using default_value_for 3.0.0
+Using orm_adapter 0.5.0
+Using warden 1.2.3
+Using devise 3.2.4
+Using devise-async 0.9.0
+Using diff-lcs 1.2.5
+Using diffy 3.0.3
+Using dotenv 0.9.0
+Using dropzonejs-rails 0.4.14
+Using emoji 1.0.1
+Using enumerize 0.7.0
+Using equalizer 0.0.8
+Using escape_utils 0.2.4
+Using eventmachine 1.0.3
+Using excon 0.32.1
+Using expression_parser 0.9.0
+Using multipart-post 1.2.0
+Using faraday 0.8.9
+Using faraday_middleware 0.9.0
+Using formatador 0.2.4
+Using net-ssh 2.8.0
+Using net-scp 1.1.2
+Using fog-core 1.21.1
+Using fog-json 1.0.0
+Using fog-brightbox 0.0.1
+Using mini_portile 0.6.0
+Using nokogiri 1.6.2.1
+Using fog 1.21.0
+Using font-awesome-rails 4.2.0.0
+Using foreman 0.63.0
+Using rugged 0.21.2
+Using gemnasium-gitlab-service 0.2.2
+Using github-markup 1.1.0
+Using posix-spawn 0.3.9
+Using gitlab-grit 2.6.12
+Using gitlab-flowdock-git-hook 0.4.2.2
+Using gitlab-grack 2.0.0.pre
+Using gitlab-linguist 3.0.0
+Using gitlab_emoji 0.0.1.1
+Using gitlab_git 7.0.0.rc12
+Using gitlab_meta 7.0
+Using net-ldap 0.7.0
+Using hashie 2.1.2
+Using omniauth 1.1.4
+Using pyu-ruby-sasl 0.0.3.3
+Using rubyntlm 0.1.1
+Using gitlab_omniauth-ldap 1.1.0
+Using rouge 1.3.3
+Using sanitize 2.1.0
+Using stringex 2.5.1
+Using gollum-lib 3.0.0
+Using gon 5.0.1
+Using multi_xml 0.5.5
+Using rack-accept 0.4.5
+Using rack-mount 0.8.3
+Using virtus 1.0.1
+Using grape 0.6.1
+Using grape-entity 0.4.2
+Using haml 4.0.5
+Using haml-rails 0.5.3
+Using httparty 0.13.0
+Using hipchat 0.14.0
+Using html-pipeline 1.11.0
+Using html-pipeline-gitlab 0.1.5
+Using http_parser.rb 0.5.3
+Using httpauth 0.2.1
+Using jquery-atwho-rails 0.3.3
+Using jquery-rails 3.1.0
+Using jquery-scrollto-rails 1.4.3
+Using turbolinks 2.0.0
+Using jquery-turbolinks 2.0.1
+Using jquery-ui-rails 4.2.1
+Using jwt 0.1.13
+Using kaminari 0.15.1
+Using kgio 2.8.1
+Using libv8 3.16.14.3
+Installing mousetrap-rails 1.4.6
+Installing mysql2 0.3.16 with native extensions
+Installing newrelic_rpm 3.9.4.245
+Installing nprogress-rails 0.1.2.3
+Installing oauth 0.4.7
+Installing oauth2 0.8.1
+Installing omniauth-oauth2 1.1.1
+Installing omniauth-github 1.1.1
+Installing omniauth-google-oauth2 0.2.5
+Installing omniauth-oauth 1.0.1
+Installing omniauth-shibboleth 1.1.1
+Installing omniauth-twitter 1.0.1
+Installing rubypants 0.2.0
+Installing org-ruby 0.9.9
+Installing rack-attack 2.3.0
+Installing rack-cors 0.2.9
+Installing rack-protection 1.5.1
+Installing rails_autolink 1.1.6
+Installing raindrops 0.12.0 with native extensions
+Installing raphael-rails 2.1.2
+Installing rdoc 3.12.2
+Installing redcarpet 3.1.2 with native extensions
+Installing redis 3.0.6
+Installing redis-store 1.1.4
+Installing redis-rack 1.5.0
+Installing redis-actionpack 4.0.0
+Installing redis-activesupport 4.0.0
+Installing redis-namespace 1.4.1
+Installing redis-rails 4.0.0
+Installing ref 1.0.5
+Installing request_store 1.0.5
+Installing rinku 1.7.3 with native extensions
+Installing sass-rails 4.0.3
+Installing seed-fu 2.3.1
+Installing select2-rails 3.5.2
+Installing semantic-ui-sass 0.16.1.0
+Installing settingslogic 2.0.9
+Installing sidekiq 2.17.0
+Installing simple_oauth 0.1.9
+Installing sinatra 1.4.4
+Installing six 0.2.0
+Installing slack-notifier 0.3.2
+Installing temple 0.6.7
+Installing slim 2.0.2
+Installing stamp 0.5.0
+Installing state_machine 1.2.0
+Installing therubyracer 0.12.0 with native extensions
+
+Connection closed by foreign host.
+
+Disconnected from remote host(BLJ-90.205) at 12:13:37.
+
+Type `help' to learn how to use Xshell prompt.
+[c:\~]$ 
+
+Connecting to 192.168.90.205:22...
+Connection established.
+To escape to local shell, press 'Ctrl+Alt+]'.
+
+Last login: Wed Jul 29 11:56:51 2015 from 10.2.254.159
+Copyright(c) 2005-2011, QiZhi Technologies. All Rights Reserved.
+License granted to SINOLINK SECURITIES CO., LTD, from 2015-03-28 to 2037-12-31.
+
+
+ 1: CDN             
+ 2: ilo????     
+ 3: Jenkins+gitlab  
+ 4: pc???¡ì±??? 
+ 5: YJBAPI1.1\1.2   
+ 6: ?????        
+ 7: ???¡ì0         
+ 8: ???¡ì٫mongodb  
+ 9: ???¡ì?FS     
+10: ?§ç          
+11: ??Ù??    
+12: ??§Ý??    
+13: ¦È??     
+14: ????         
+15: ?????\???Ø?  
+16: ????¡À     
+17: ?4??         
+ 0: all
+Select group: 3
+
+ 1: JENKINS-MASTER (192.168.70.17)  
+ 2: NL-slave-174   (172.16.2.174)   
+ 3: XX-slave-208   (197.1.1.208)    XX-slave-208
+ 4: ZR-slave-155   (172.16.3.155)   ZR-slave-155
+Select server: 2
+
+Selected account: root
+
+
+SHTERM 2.6.3-35fa58f3
+Copyright (c) 2005-2011, QiZhi Technologies. All Rights Reserved.
+License granted to SINOLINK SECURITIES CO., LTD.
+Valid from 2015-03-28 to 2037-12-31.
+Last login: Wed Jul 29 12:01:11 2015 from 172.16.1.1
+[root@gitlab ~]# cd /home/git/gitlab
+[root@gitlab gitlab]# sudo -u git -H bundle install --deployment --without development test postgres aws
+Fetching gem metadata from http://rubygems.org/........
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Using rake 10.3.2
+Using RedCloth 4.2.9
+Using ace-rails-ap 2.0.1
+Using i18n 0.6.11
+Using json 1.8.1
+Using minitest 5.3.5
+Using thread_safe 0.3.4
+Using tzinfo 1.2.2
+Using activesupport 4.1.1
+Using builder 3.2.2
+Using erubis 2.7.0
+Using actionview 4.1.1
+Using rack 1.5.2
+Using rack-test 0.6.2
+Using actionpack 4.1.1
+Using mime-types 1.25.1
+Using polyglot 0.3.4
+Using treetop 1.4.15
+Using mail 2.5.4
+Using actionmailer 4.1.1
+Using activemodel 4.1.1
+Using arel 5.0.1.20140414130214
+Using activerecord 4.1.1
+Using bundler 1.10.6
+Using thor 0.19.1
+Using railties 4.1.1
+Using hike 1.2.3
+Using multi_json 1.10.1
+Using tilt 1.4.1
+Using sprockets 2.11.0
+Using sprockets-rails 2.1.3
+Using rails 4.1.1
+Using acts-as-taggable-on 2.4.1
+Using addressable 2.3.5
+Using asciidoctor 0.1.4
+Using descendants_tracker 0.0.3
+Using ice_nine 0.10.0
+Using axiom-types 0.0.5
+Using bcrypt 3.1.7
+Using sass 3.2.19
+Using bootstrap-sass 3.0.3.0
+Using carrierwave 0.9.0
+Using timers 1.1.0
+Using celluloid 0.15.2
+Using charlock_holmes 0.6.9.4
+Using coercible 1.0.0
+Using coffee-script-source 1.6.3
+Using execjs 2.0.2
+Using coffee-script 2.2.0
+Using coffee-rails 4.0.1
+Using colored 1.2
+Using connection_pool 1.2.0
+Using creole 0.3.8
+Using d3_rails 3.1.10
+Using default_value_for 3.0.0
+Using orm_adapter 0.5.0
+Using warden 1.2.3
+Using devise 3.2.4
+Using devise-async 0.9.0
+Using diff-lcs 1.2.5
+Using diffy 3.0.3
+Using dotenv 0.9.0
+Using dropzonejs-rails 0.4.14
+Using emoji 1.0.1
+Using enumerize 0.7.0
+Using equalizer 0.0.8
+Using escape_utils 0.2.4
+Using eventmachine 1.0.3
+Using excon 0.32.1
+Using expression_parser 0.9.0
+Using multipart-post 1.2.0
+Using faraday 0.8.9
+Using faraday_middleware 0.9.0
+Using formatador 0.2.4
+Using net-ssh 2.8.0
+Using net-scp 1.1.2
+Using fog-core 1.21.1
+Using fog-json 1.0.0
+Using fog-brightbox 0.0.1
+Using mini_portile 0.6.0
+Using nokogiri 1.6.2.1
+Using fog 1.21.0
+Using font-awesome-rails 4.2.0.0
+Using foreman 0.63.0
+Using rugged 0.21.2
+Using gemnasium-gitlab-service 0.2.2
+Using github-markup 1.1.0
+Using posix-spawn 0.3.9
+Using gitlab-grit 2.6.12
+Using gitlab-flowdock-git-hook 0.4.2.2
+Using gitlab-grack 2.0.0.pre
+Using gitlab-linguist 3.0.0
+Using gitlab_emoji 0.0.1.1
+Using gitlab_git 7.0.0.rc12
+Using gitlab_meta 7.0
+Using net-ldap 0.7.0
+Using hashie 2.1.2
+Using omniauth 1.1.4
+Using pyu-ruby-sasl 0.0.3.3
+Using rubyntlm 0.1.1
+Using gitlab_omniauth-ldap 1.1.0
+Using rouge 1.3.3
+Using sanitize 2.1.0
+Using stringex 2.5.1
+Using gollum-lib 3.0.0
+Using gon 5.0.1
+Using multi_xml 0.5.5
+Using rack-accept 0.4.5
+Using rack-mount 0.8.3
+Using virtus 1.0.1
+Using grape 0.6.1
+Using grape-entity 0.4.2
+Using haml 4.0.5
+Using haml-rails 0.5.3
+Using httparty 0.13.0
+Using hipchat 0.14.0
+Using html-pipeline 1.11.0
+Using html-pipeline-gitlab 0.1.5
+Using http_parser.rb 0.5.3
+Using httpauth 0.2.1
+Using jquery-atwho-rails 0.3.3
+Using jquery-rails 3.1.0
+Using jquery-scrollto-rails 1.4.3
+Using turbolinks 2.0.0
+Using jquery-turbolinks 2.0.1
+Using jquery-ui-rails 4.2.1
+Using jwt 0.1.13
+Using kaminari 0.15.1
+Using kgio 2.8.1
+Using libv8 3.16.14.3
+Using mousetrap-rails 1.4.6
+Using mysql2 0.3.16
+Using newrelic_rpm 3.9.4.245
+Using nprogress-rails 0.1.2.3
+Using oauth 0.4.7
+Using oauth2 0.8.1
+Using omniauth-oauth2 1.1.1
+Using omniauth-github 1.1.1
+Using omniauth-google-oauth2 0.2.5
+Using omniauth-oauth 1.0.1
+Using omniauth-shibboleth 1.1.1
+Using omniauth-twitter 1.0.1
+Using rubypants 0.2.0
+Using org-ruby 0.9.9
+Using rack-attack 2.3.0
+Using rack-cors 0.2.9
+Using rack-protection 1.5.1
+Using rails_autolink 1.1.6
+Using raindrops 0.12.0
+Using raphael-rails 2.1.2
+Using rdoc 3.12.2
+Using redcarpet 3.1.2
+Using redis 3.0.6
+Using redis-store 1.1.4
+Using redis-rack 1.5.0
+Using redis-actionpack 4.0.0
+Using redis-activesupport 4.0.0
+Using redis-namespace 1.4.1
+Using redis-rails 4.0.0
+Using ref 1.0.5
+Using request_store 1.0.5
+Using rinku 1.7.3
+Using sass-rails 4.0.3
+Using seed-fu 2.3.1
+Using select2-rails 3.5.2
+Using semantic-ui-sass 0.16.1.0
+Using settingslogic 2.0.9
+Using sidekiq 2.17.0
+Using simple_oauth 0.1.9
+Using sinatra 1.4.4
+Using six 0.2.0
+Using slack-notifier 0.3.2
+Using temple 0.6.7
+Using slim 2.0.2
+Using stamp 0.5.0
+Using state_machine 1.2.0
+Using therubyracer 0.12.0
+Using twitter-stream 0.1.16
+Installing tinder 1.9.3
+Installing uglifier 2.3.2
+Installing underscore-rails 1.4.4
+Installing unf_ext 0.0.6 with native extensions
+Installing unf 0.1.4
+Installing unicorn 4.6.3 with native extensions
+Installing unicorn-worker-killer 0.4.2
+Installing version_sorter 1.1.0 with native extensions
+Installing wikicloth 0.8.1
+Bundle complete! 122 Gemfile dependencies, 187 gems now installed.
+Gems in the groups development, test, postgres and aws were not installed.
+Bundled gems are installed into ./vendor/bundle.
