@@ -1,0 +1,31 @@
+function FindProxyForURL(url, host) {
+    var d = "DIRECT";
+    var proxy1 = "SOCKS5 192.168.142.129:9003";
+    var proxy2 = "SOCKS5 192.168.142.129:9004";
+    //var proxy1 = "http 192.168.142.129:9003";
+    //var proxy2 = "http 192.168.142.129:9004";
+
+    if (dnsDomainIs(host, '.gjzq.com.cn') 
+        || dnsDomainIs(host, '.yongjinbao.com')
+        || dnsDomainIs(host, 'localhost')
+        || dnsDomainIs(host, '127.0.0.1')) {
+        return d;
+    } else if (
+            dnsDomainIs(host,".lightinthebox.com")
+            || dnsDomainIs(host,".skype.com")
+            || dnsDomainIs(host,".youtube.com")
+            || dnsDomainIs(host,".gstatic.com")
+            || dnsDomainIs(host,".facebook.net")
+            || dnsDomainIs(host,".facebook.com")
+            || dnsDomainIs(host,"facebook.com")
+            || dnsDomainIs(host,".twitter.com")
+            || dnsDomainIs(host,".android.com")
+            || dnsDomainIs(host,"twitter.com")) {
+        return proxy1;
+    //} else if (dnsDomainIs(host,".google.com")){
+    }else if(host.search("google") >= 0){
+        return proxy2;
+    }
+    
+    return d + "; " + proxy1;
+}

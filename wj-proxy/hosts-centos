@@ -1,0 +1,3 @@
+hosts=(
+"Singapore-proxy-0-SG1:ec2-user:54.169.100.247:22:20101:20301"
+)
