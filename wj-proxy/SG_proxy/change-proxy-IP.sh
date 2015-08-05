@@ -28,6 +28,9 @@ if [ $# != 2 ]; then
 		# Step 2 : update haproxy.cfg files
 		sed -i -r "s|$oldIP|$newIP|g" haproxy.cfg
 		echo "update haproxy.cfg files OK ^-^"
+		# Step 3 : update ssh_to_SG_proxy.sh files
+		sed -i -r "s|$oldIP|$newIP|g" ssh_to_SG_proxy.sh
+		echo "update ssh_to_SG_proxy.sh files OK ^-^"
 	done
 else
 	oldIP=$1
@@ -38,6 +41,9 @@ else
 	# Step 2 : update haproxy.cfg files
 	sed -i -r "s|$oldIP|$newIP|g" haproxy.cfg
 	echo "update haproxy.cfg files OK ^-^"
+	# Step 3 : update ssh_to_SG_proxy.sh files
+	sed -i -r "s|$oldIP|$newIP|g" ssh_to_SG_proxy.sh
+	echo "update ssh_to_SG_proxy.sh files OK ^-^"
 fi
 
 
