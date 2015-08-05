@@ -2,9 +2,8 @@
 # $1 = old-IP
 # $2 = new-IP
 # chang-proxy-IP.sh $1 $2 
-# Setp 1 : update proxy-IPs.sql file
-# Step 2 : update hosts file
-# Step 3 : update haproxy.cfg files
+# Step 1 : update wj_proxy_hosts.txt file
+# Step 2 : update haproxy.cfg files
 cd $(dirname $0) && pwd
 oldIPs=(
 	"54.169.151.171"
@@ -23,37 +22,21 @@ if [ $# != 2 ]; then
 	for i in ${num[@]};do
 		oldIP=${oldIPs[$i]}
 		newIP=${newIPs[$i]}
-		olderIP=`grep -C1 "${oldIPs[$i]}" proxy-IPs.sql |grep "delete" | awk '{print $7}' |awk -F"\"" '{print $2}'`
-		# Setp 1 : update proxy-IPs.sql file
-		sed -i -r "s|$oldIP|$newIP|g" proxy-IPs.sql
-		sed -i -r "s|$olderIP|$oldIP|g" proxy-IPs.sql
-		echo "update proxy-IPs.sql OK ^-^"
-		# Step 2 : update hosts file
-		sed -i -r "s|$oldIP|$newIP|g" hosts
-		sed -i -r "s|$oldIP|$newIP|g" hosts-centos
+		# Step 1 : update hosts file
+		sed -i -r "s|$oldIP|$newIP|g" wj_proxy_hosts.txt
 		echo "update hosts OK ^-^"
-		# Step 3 : update haproxy.cfg files
-		sed -i -r "s|$oldIP|$newIP|g" haproxy/haproxy.cfg.sh-41
-		sed -i -r "s|$oldIP|$newIP|g" haproxy/haproxy.cfg.sh-49
-		sed -i -r "s|$oldIP|$newIP|g" haproxy/haproxy.cfg.sz-15
+		# Step 2 : update haproxy.cfg files
+		sed -i -r "s|$oldIP|$newIP|g" haproxy.cfg
 		echo "update haproxy.cfg files OK ^-^"
 	done
 else
 	oldIP=$1
 	newIP=$2
-	olderIP=`grep -C1 $oldIP proxy-IPs.sql |grep "delete" | awk '{print $7}' |awk -F"\"" '{print $2}'`
-	# Setp 1 : update proxy-IPs.sql file
-	sed -i -r "s|$oldIP|$newIP|g" proxy-IPs.sql
-	sed -i -r "s|$olderIP|$oldIP|g" proxy-IPs.sql
-	echo "update proxy-IPs.sql OK ^-^"
-	# Step 2 : update hosts file
-	sed -i -r "s|$oldIP|$newIP|g" hosts
-	sed -i -r "s|$oldIP|$newIP|g" hosts-centos 
+	# Step 1 : update hosts file
+	sed -i -r "s|$oldIP|$newIP|g" wj_proxy_hosts.txt
 	echo "update hosts OK ^-^"
-	# Step 3 : update haproxy.cfg files
-	sed -i -r "s|$oldIP|$newIP|g" haproxy/haproxy.cfg.sh-41
-	sed -i -r "s|$oldIP|$newIP|g" haproxy/haproxy.cfg.sh-49
-	sed -i -r "s|$oldIP|$newIP|g" haproxy/haproxy.cfg.sz-15
+	# Step 2 : update haproxy.cfg files
+	sed -i -r "s|$oldIP|$newIP|g" haproxy.cfg
 	echo "update haproxy.cfg files OK ^-^"
 fi
 
