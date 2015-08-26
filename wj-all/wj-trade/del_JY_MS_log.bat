@@ -1,0 +1,5 @@
+forfiles /p "D:\jyserver\module\log" /s /m *.tzt /d -10 /c "cmd /c del @path"
+forfiles /p "D:\jyserver\module\log\Interface" /s /m *.tzt /d -10 /c "cmd /c del @path"
+forfiles /p "D:\zzinfo\tzt\jy\DebugLog" /s /m *.MS /d -10 /c "cmd /c del @path"
+forfiles /p "D:\zzinfo\tzt\jy\DebugLog" /s /m *.log /d -10 /c "cmd /c del @path"
+forfiles /p "D:\zzinfo\tzt\jy\DebugLog" /s /m *.STA /d -10 /c "cmd /c del @path"
