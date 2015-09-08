@@ -6,6 +6,7 @@ function FindProxyForURL(url, host) {
     if (dnsDomainIs(host, '.gjzq.com.cn') 
         || dnsDomainIs(host, '.yongjinbao.com.cn')
         || dnsDomainIs(host, '.163.com')
+        || dnsDomainIs(host, '.gitlab.com')
         || dnsDomainIs(host, '.oschina.net')
         || dnsDomainIs(host, 'localhost')
         || dnsDomainIs(host, '127.0.0.1')) {
