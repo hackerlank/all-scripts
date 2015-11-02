@@ -11,7 +11,7 @@ ssh -p58022 ec2-user@52.76.15.252 -i /root/.ssh/sg_proxy.pem
 #SG-proxy-4
 ssh -p58022 ec2-user@52.76.48.59 -i /root/.ssh/sg_proxy.pem
 #SG-proxy-5
-ssh -p58022 ec2-user@52.76.48.40 -i /root/.ssh/sg_proxy.pem
+ssh -p58022 ec2-user@54.251.144.107 -i /root/.ssh/sg_proxy.pem
 #SG-proxy-6
 ssh -p58022 ec2-user@52.76.48.22 -i /root/.ssh/sg_proxy.pem
 #SG-proxy-7
