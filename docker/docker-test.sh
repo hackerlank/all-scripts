@@ -8,5 +8,15 @@ docker push localhost:5000/trade/wj-busybox:v1.0
 docker run -d -e ENV_DOCKER_REGISTRY_HOST=192.168.24.35 -e ENV_DOCKER_REGISTRY_PORT=5000 -p 8080:80 konradkleine/docker-registry-frontend
 
 
-docker run -d --name docker-registry -p 5000:5000 -v /docker-registry:/tmp/registry registry
-docker run -d --name docker-registry-ui -e ENV_DOCKER_REGISTRY_HOST=192.168.142.133 -e ENV_DOCKER_REGISTRY_PORT=5000 -p 8080:80 konradkleine/docker-registry-frontend
+docker run -d --restart=always --name docker-registry -p 5000:5000 -v /docker-registry:/tmp/registry registry
+docker run -d --restart=always --name docker-registry-ui -e ENV_DOCKER_REGISTRY_HOST=192.168.142.133 -e ENV_DOCKER_REGISTRY_PORT=5000 -p 8080:80 konradkleine/docker-registry-frontend
+
+# openssl
+openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=docker.yjb.com" -keyout yjb.com.key  -out yjb.com.crt
+
+htpasswd -b -c htpassword  yu_lin qwe123lin
+
+
+docker run -d -p 5000:5000 --restart=always --name docker-registry -v /certs:/certs -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/yjb.com.crt -e REGISTRY_HTTP_TLS_KEY=/certs/yjb.com.key registry
+
+docker run -d -p 5000:5000 --restart=always --name docker-registry -v /root/auth/:/auth/ -e "REGISTRY_AUTH=htpasswd" -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpassword -v /certs:/certs -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/yjb.com.crt -e REGISTRY_HTTP_TLS_KEY=/certs/yjb.com.key registry
