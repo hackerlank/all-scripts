@@ -20,3 +20,24 @@ htpasswd -b -c htpassword  yu_lin qwe123lin
 docker run -d -p 5000:5000 --restart=always --name docker-registry -v /certs:/certs -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/yjb.com.crt -e REGISTRY_HTTP_TLS_KEY=/certs/yjb.com.key registry
 
 docker run -d -p 5000:5000 --restart=always --name docker-registry -v /root/auth/:/auth/ -e "REGISTRY_AUTH=htpasswd" -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpassword -v /certs:/certs -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/yjb.com.crt -e REGISTRY_HTTP_TLS_KEY=/certs/yjb.com.key registry
+
+
+rpm -ivh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+docker --insecure-registry docker.yjb.com:8080 run -d -p 5000:5000 --restart=always --name docker-registry  -e SETTINGS_FLAVOR=dev -e STORAGE_PATH=/tmp/registry -v /opt/data/registry:/tmp/registry registry 
+
+
+docker --insecure-registry docker.yjb.com:8080  run   -d -p 5000:5000 --restart=always --name docker-registry  -e SETTINGS_FLAVOR=dev -e STORAGE_PATH=/tmp/registry -v /opt/data/registry:/tmp/registry registry
+
+
+--insecure-registry
+
+
+docker run -d -p 5000:5000 -v /opt/data:/tmp/registry  docker.io/registry:latest registry
+
+
+#***************************************************
+
+docker run -d -p 5000:5000 --name wj-registry -v /opt/data:/var/lib/registry --restart=always registry
+
+#***************************************************
