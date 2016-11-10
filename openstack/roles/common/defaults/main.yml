@@ -1,0 +1,37 @@
+---
+  nova_ks_tenant: services
+  nova_ks_user: nova
+  nova_ks_password: NanHui_Cloud@PWXnova
+
+  ceilometer_ks_tenant: services
+  ceilometer_ks_user: ceilometer
+  ceilometer_ks_password: 4771108d1de84b0c 
+
+  cinder_ks_tenant: services
+  cinder_ks_user: cinder
+  cinder_ks_password: NanHui_Cloud@PWXcinder
+
+  glance_ks_tenant: services
+  glance_ks_user: glance
+  glance_ks_password: NanHui_Cloud@PWXglance
+
+  neutron_ks_tenant: services
+  neutron_ks_user: neutron
+  neutron_ks_password: NanHui_Cloud@PWXneutron
+
+  nova_db_user: nova
+  nova_db_password: NanHui_Cloud@PWXnova
+
+  ceilometer_db_user: ceilometer
+  ceilometer_db_password: 4771108d1de84b0c 
+
+  cinder_db_user: cinder
+  cinder_db_password: NanHui_Cloud@PWXcinder
+
+  glance_db_user: glance
+  glance_db_password: NanHui_Cloud@PWXglance
+
+  neutron_db_user: neutron
+  neutron_db_password: NanHui_Cloud@PWXneutron
+
+  ntp_servers: "202.108.53.214 192.43.244.18"

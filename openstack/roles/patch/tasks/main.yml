@@ -1,0 +1,9 @@
+---
+  - name: use all patchs
+    script: host_config.sh 
+    notify:
+      - start nova
+      - start neutron
+      - start glance
+      - start cinder
+      - start ceilometer

@@ -1,0 +1,12 @@
+---
+  - name: start chrony
+    shell: systemctl restart {{item}}
+    with_items:
+      - chrony
+    when: ansible_distribution_major_version|int == 7
+
+  - name: enable chrony
+    shell: systemctl enable {{item}}
+    with_items:
+      - chrony
+    when: ansible_distribution_major_version|int == 7

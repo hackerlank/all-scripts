@@ -1,0 +1,43 @@
+[DEFAULT]
+verbose=True
+debug=False
+default_store = rbd
+bind_host = 0.0.0.0
+bind_port = 9292
+log_file=/var/log/glance/api.log
+backlog = 4096
+sql_idle_timeout = 3600
+workers = 8
+use_syslog = False
+registry_host = 0.0.0.0
+registry_port = 9191
+registry_client_protocol = http
+notifier_strategy=rabbit
+rabbit_host = {{os_rabbitmq}}
+rabbit_port = 5672
+rabbit_use_ssl = false
+rabbit_virtual_host = /
+rabbit_notification_exchange = glance
+rabbit_notification_topic = notifications
+rabbit_durable_queues = False
+filesystem_store_datadir=/var/lib/glance/images/
+rbd_store_ceph_conf = /etc/ceph/ceph.conf
+rbd_store_user = glance
+rbd_store_pool = images
+rbd_store_chunk_size = 8
+delayed_delete = False
+scrub_time = 43200
+show_image_direct_url = True
+[keystone_authtoken]
+auth_host={{os_keystone}}
+auth_port=35357
+auth_protocol=http
+admin_tenant_name=services
+admin_user=glance
+admin_password=NanHui_Cloud@PWXglance
+auth_uri=http://{{os_keystone}}:5000
+auth_version = v2.0
+[paste_deploy]
+flavor=keystone
+[database]
+sql_connection = mysql://glance:{{os_passwd}}_Cloud-DB@PWXglance@{{os_mysql}}/glance

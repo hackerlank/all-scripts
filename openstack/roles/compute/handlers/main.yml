@@ -1,0 +1,24 @@
+---
+  - name: start compute
+    shell: systemctl restart {{item}}
+    with_items:
+        - openstack-nova-compute
+        - neutron-linuxbridge-agent
+        - openstack-ceilometer-compute
+    when: ansible_distribution_major_version|int == 7
+
+  - name: enable compute
+    shell: systemctl enable {{item}}
+    with_items:
+        - openstack-nova-compute
+        - neutron-linuxbridge-agent
+        - openstack-ceilometer-compute
+    when: ansible_distribution_major_version|int == 7
+
+  - name: restart neutron_linuxbridge_agent
+    shell: systemctl restart neutron-linuxbridge-agent.service
+    when: ansible_distribution_major_version|int == 7
+
+  - name: restart libvirtd
+    shell: systemctl restart libvirtd.service
+    when: ansible_distribution_major_version|int == 7

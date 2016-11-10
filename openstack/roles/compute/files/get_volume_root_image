@@ -1,0 +1,33 @@
+import rados
+import rbd
+import sys
+
+CONF_FILE='/etc/ceph/ceph.conf'
+
+#VOL_POOL='glance'
+#VOL_NAME='volume-c05656f3-a795-47ac-a6a6-694b976bf023'
+
+if len(sys.argv)<3:
+    print('Pls input argument volume_pool volume_name')
+    sys.exit(1)
+volume_pool=sys.argv[1]
+volume_name=sys.argv[2]
+
+
+            
+def get_volume_root_image(conf, vol_pool, vol_name):
+    with rados.Rados(conffile=conf) as cluster:
+        with cluster.open_ioctx(vol_pool) as ioctx:
+            with rbd.Image(ioctx, vol_name) as image:
+                parent_info = image.parent_info()
+                while 'volume' in parent_info[1]:
+                    with rbd.Image(ioctx, parent_info[1]) as image_temp:
+                        parent_info = image_temp.parent_info()
+                root_image = parent_info[1]
+                print root_image
+                return root_image
+
+
+
+if __name__ == '__main__':
+    get_volume_root_image(CONF_FILE, volume_pool, volume_name)

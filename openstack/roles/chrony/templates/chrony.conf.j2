@@ -1,0 +1,22 @@
+server ntp1.aliyun.com iburst
+server ntp2.aliyun.com iburst
+server ntp3.aliyun.com iburst
+server ntp4.aliyun.com iburst
+server ntp5.aliyun.com iburst
+server 202.108.53.214 iburst
+server 192.43.244.18 iburst
+stratumweight 0
+driftfile /var/lib/chrony/drift
+rtcsync
+allow all
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+keyfile /etc/chrony.keys
+commandkey 1
+generatecommandkey
+noclientlog
+logchange 0.5
+logdir /var/log/chrony
+log measurements statistics tracking
+makestep -1 -1
+log measurements statistics tracking

@@ -1,0 +1,6 @@
+[filter:authtoken]
+identity_uri=http://{{os_keystone}}:35357
+admin_user=neutron
+admin_password={{CONFIG_NEUTRON_KS_PW}}
+auth_uri=http://{{os_keystone}}:5000/v2.0
+admin_tenant_name=services

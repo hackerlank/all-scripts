@@ -1,0 +1,30 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+        - openstack-keystone
+        - python-openstackclient
+        - httpd
+        - mod_wsgi
+        - MySQL-python
+        - python-yaml
+
+  - name: Sync config files
+    template: src={{item}}.j2 dest=/etc/keystone/{{item}} backup=yes owner=keystone group=keystone mode=0640
+    with_items:
+        - keystone.conf
+
+  - name: config keystone with httpd
+    script: openstack_keystone.sh
+    notify:
+        - enable keystone
+
+  - name: Sync keystone wsgi file
+    template: src={{item}}.j2 dest=/etc/httpd/conf.d/{{item}} backup=yes owner=keystone group=keystone mode=0644
+    with_items:
+        - openstack-keystone.conf
+        - wsgi.load
+        - wsgi.conf
+
+  - name: Create keystone
+    script: python keystone.py   

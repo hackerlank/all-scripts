@@ -1,0 +1,77 @@
+[DEFAULT]
+verbose = True
+router_distributed = False
+debug = False
+state_path = /var/lib/neutron
+use_syslog = False
+log_dir =/var/log/neutron
+bind_host = 0.0.0.0
+bind_port = 9696
+core_plugin =neutron.plugins.ml2.plugin.Ml2Plugin
+service_plugins =router
+auth_strategy = keystone
+base_mac = fa:16:3e:00:00:00
+mac_generation_retries = 16
+dhcp_lease_duration = 3144960000
+dhcp_agent_notification = True
+allow_bulk = True
+allow_pagination = False
+allow_sorting = False
+allow_overlapping_ips = True
+agent_down_time = 75
+router_scheduler_driver = neutron.scheduler.l3_agent_scheduler.ChanceScheduler
+allow_automatic_l3agent_failover = False
+dhcp_agents_per_network = 2
+l3_ha = False
+api_workers = 8
+rpc_workers = 8
+use_ssl = False
+notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+nova_url = http://{{os_control}}:8774/v2
+nova_region_name ={{os_region}}
+nova_admin_username =nova
+nova_admin_tenant_id ={{nova_tenant_id.stdout_lines[0]}}
+nova_admin_password ={{CONFIG_NOVA_KS_PW}}
+nova_admin_auth_url =http://{{os_keystone}}:5000/v2.0
+send_events_interval = 2
+rpc_backend=neutron.openstack.common.rpc.impl_kombu
+control_exchange=neutron
+lock_path=/var/lib/neutron/lock
+[matchmaker_redis]
+[matchmaker_ring]
+[quotas]
+[agent]
+root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
+report_interval = 30
+[keystone_authtoken]
+auth_uri = http://{{os_keystone}}:5000/v2.0
+identity_uri = http://{{os_keystone}}:35357
+admin_tenant_name = services
+admin_user = neutron
+admin_password = {{CONFIG_NEUTRON_KS_PW}}
+auth_version = v2.0
+[database]
+connection = mysql://neutron:{{CONFIG_NEUTRON_DB_PW}}@{{os_mysql}}/neutron
+max_retries = 20
+retry_interval = 10
+min_pool_size = 1
+max_pool_size = 100
+idle_timeout = 3600
+max_overflow = 100
+[nova]
+[oslo_concurrency]
+lock_path = $state_path/lock
+[oslo_policy]
+[oslo_messaging_amqp]
+[oslo_messaging_qpid]
+[oslo_messaging_rabbit]
+kombu_reconnect_delay = 1.0
+rabbit_host = {{os_rabbitmq}}
+rabbit_port = 5672
+rabbit_hosts = {{os_rabbitmq}}:5672
+rabbit_use_ssl = False
+rabbit_userid = guest
+rabbit_password = guest
+rabbit_virtual_host = /
+rabbit_ha_queues = False

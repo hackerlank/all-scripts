@@ -1,0 +1,59 @@
+[DEFAULT]
+debug = False
+verbose = False
+use_syslog = False
+log_dir =/var/log/neutron
+bind_host = 0.0.0.0
+bind_port = 9696
+core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin
+service_plugins =neutron.services.l3_router.l3_router_plugin.L3RouterPlugin
+api_paste_config = /etc/neutron/api-paste.ini
+auth_strategy = keystone
+base_mac = fa:16:3e:00:00:00
+mac_generation_retries = 16
+dhcp_lease_duration = 3144960000
+allow_bulk = True
+allow_overlapping_ips = True
+rpc_backend=neutron.openstack.common.rpc.impl_kombu
+control_exchange = neutron
+rabbit_host={{os_rabbitmq}}
+rabbit_port=5672
+agent_down_time = 60
+router_scheduler_driver = neutron.scheduler.l3_agent_scheduler.ChanceScheduler
+dhcp_agents_per_network = 2
+api_workers = 8
+report_interval=30
+rpc_thread_pool_size = 128
+rpc_conn_pool_size = 60
+rpc_response_timeout = 120
+notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+nova_region_name = {{os_region}}
+nova_url = http://{{os_control}}:8774/v2
+nova_admin_username = nova
+nova_admin_tenant_id = a2b9ebacdb3343c68a009d98e96cc337
+nova_admin_password = NanHui_Cloud@PWXnova
+nova_admin_auth_url = http://{{os_keystone}}:35357/v2.0
+[quotas]
+[agent]
+[keystone_authtoken]
+auth_host = {{os_keystone}}
+auth_port = 35357
+auth_protocol = http
+admin_tenant_name = services
+admin_user = neutron
+admin_password = NanHui_Cloud@PWXneutron
+auth_uri=http://{{os_keystone}}:5000
+auth_version = v2.0
+auth_region = {{os_region}}
+[database]
+connection =mysql://neutron:{{os_passwd}}_Cloud-DB@PWXnuetron@{{os_mysql}}/neutron_linux_bridge
+retry_interval = 10
+idle_timeout = 3600
+max_retries = 20
+max_pool_size = 100
+max_overflow = 100
+pool_timeout = 30
+[service_providers]
+[AGENT]
+root_helper=sudo neutron-rootwrap /etc/neutron/rootwrap.conf

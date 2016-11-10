@@ -1,0 +1,24 @@
+---
+- name: Install OpenStack ConTrol
+  hosts: control
+  vars:
+    region: "BJ"
+    os_region: "beijing"
+    os_passwd: "BeiJing"
+    os_control: "172.28.0.250"
+    os_keystone: "172.30.250.101"
+    os_mysql: "172.28.2.247"
+    os_mongodb: "172.28.5.122"
+    os_rabbitmq: "172.28.2.247"
+    os_flat_net: "BGP,BJ-WT,BJ-NW,BJ-CC"
+    os_net_map: "vlannet:bond0,BGP:bond0.1500,BJ-WT:bond0.1501,BJ-NW:bond0.1502,BJ-CC:bond0.1503"
+    ansible_ssh_pass: "ZtGame@321EWQdsa"
+
+  roles:
+    - { role: common }
+    - { role: nova }
+#    - { role: cinder }
+#    - { role: glance }
+#    - { role: ceilometer }
+#    - { role: neutron }
+#    - { role: patch }

@@ -1,0 +1,8 @@
+---
+- hosts: master
+  roles:
+      - { role: mysql , state: 'master' }
+
+- hosts: slave
+  roles:
+      - { role: mysql , state: 'slave' }

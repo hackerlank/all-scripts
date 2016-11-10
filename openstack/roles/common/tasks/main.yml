@@ -1,0 +1,88 @@
+---
+  - name: run host_init.sh
+    script: host_init.sh 
+
+  - name: Sync yum
+    template: src=ztrcloud-openstack-ceph.repo dest=/etc/yum.repos.d/ztrcloud-openstack-ceph.repo
+
+  - name: Sync ssh key
+    template: src={{item}} dest=/root/.ssh/{{item}} owner=root group=root mode=0600
+    with_items:
+        - id_rsa
+        - authorized_keys
+        - id_rsa.pub
+
+  - name: install some usefull packets
+    yum: name={{item}} 
+    with_items:
+      - telnet
+      - lrzsz
+      - iptraf
+      - sysstat
+      - nload
+      - iftop
+      - nload
+      - lrzsz
+      - rsync
+      - iproute
+      - curl
+      - libcurl
+      - perf
+      - gperftools
+      - libselinux-python
+
+  - name: disable selinux
+    selinux: state=disabled
+
+  - name: add crontab
+    cron: name='sync time' minute='*/10' job='/usr/sbin/ntpdate  {{ntp_servers}} >>/dev/null 2>&1' 
+
+  - name: disable firewalld
+    shell: systemctl stop firewalld.service;systemctl disable firewalld.service
+    when: ansible_distribution_major_version|int == 7
+
+  - name: setup_hostname_el7
+    shell: hostnamectl set-hostname {{region}}-{{group_names[0]}}-Cloud{{inventory_hostname.split('.')[3]}} --{{item}}
+    with_items:
+      - static
+      - transient
+      - pretty 
+    when: ansible_distribution_major_version|int == 7
+
+  - name: setup_hostname_el6 
+    hostname: name={{region}}-{{group_names[0]}}-Cloud{{inventory_hostname.split('.')[3]}}
+    when: ansible_distribution_major_version|int == 6
+
+  - name: update kernel
+    yum: name=kernel state=latest
+    tags: update
+
+  - name: enable linux bridge iptables 
+    sysctl: name={{item}} value=1 state=present sysctl_file=/usr/lib/sysctl.d/00-system.conf sysctl_set=yes 
+    with_items:
+      - net.bridge.bridge-nf-call-ip6tables
+      - net.bridge.bridge-nf-call-iptables
+      - net.bridge.bridge-nf-call-arptables
+    when: ansible_distribution_major_version|int == 7
+    tags: briptables
+
+  - name: sync firewall
+    template: src=forward dest=/etc/rc.d/forward backup=yes owner=root group=root mode=0755
+    tags: syncfirewall
+
+  - name: apply_firewall
+    shell: sh /etc/rc.d/forward
+    tags: apply_firewall
+
+  - name: sysctl_nf_connect_max 
+    sysctl: name=net.netfilter.nf_conntrack_max value=10000000 state=present sysctl_file=/etc/sysctl.conf sysctl_set=yes
+
+  - name: sysctl_nf_conntrack_tcp_timeout_time_wait 
+    sysctl: name=net.netfilter.nf_conntrack_tcp_timeout_time_wait value=30 state=present sysctl_file=/etc/sysctl.conf sysctl_set=yes
+
+  - name: sysctl_nf_conntrack_tcp_timeout_established 
+    sysctl: name=net.netfilter.nf_conntrack_tcp_timeout_established value=3600 state=present sysctl_file=/etc/sysctl.conf sysctl_set=yes
+
+  - name: sysctl_kernel_pid_max 
+    sysctl: name=kernel.pid_max value=4194304 state=present sysctl_file=/etc/sysctl.conf sysctl_set=yes
+

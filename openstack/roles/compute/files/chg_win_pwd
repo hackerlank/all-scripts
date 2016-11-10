@@ -1,0 +1,264 @@
+import sys
+import base64
+import yaml
+import os
+import libvirt
+
+if len(sys.argv)<3:
+    print('Pls input argument instance_id instance_user_data.')
+    sys.exit(1)
+
+instance_name = sys.argv[1]
+instance_user_data = sys.argv[2]
+
+TOP_DIR = '/opt/minion/extmods/modules/'
+DISK_CONFIG = '/var/lib/nova/instances/%s/disk.config'
+
+USERDATA_SAMPLE = """
+#cloud-config
+chpasswd:
+    list: |
+        Administrator: %s
+    SerialNum: %s
+"""
+
+def chg_win_pwd(name, data):
+    result, id = get_instance_uuid(name)
+    if not result:
+        print "False, can't find %s" %name
+        reurn 
+
+    result, pwd_, serial = get_pwd_and_ser(data)
+    if not result:
+        print "False, alalyze user_data error"
+        return 
+    
+    result, LOG = _chg_win_pwd(id, name, pwd_, serial) 
+    if not result:
+        _handle_exception(dir)
+        print LOG
+        return
+    
+    print "True, %s" % LOG
+
+def get_instance_uuid(name):
+    conn = libvirt.openReadOnly(None)
+    if conn == None:
+        return False, None
+
+    try:
+        dom0 = conn.lookupByName(name)
+        uuid = dom0.UUIDString()
+    except:
+        return False, None
+
+    return True, uuid
+
+def get_pwd_and_ser(data):
+    try:
+        data_str = base64.urlsafe_b64decode(data)
+        data_dict = yaml.load(data_str)
+        pwd_ = data_dict["chpasswd"]["list"].split("Administrator: ")[1].replace("\n","")
+        serial = data_dict["chpasswd"]["SerialNum"]
+    except Exception,ex:
+        return False, None, None
+    return True, pwd_, serial
+
+
+"""
+change windows passwd have 12 steps in local operation:
+0.mkdir tmp dirs
+1.create disk_config bakup file
+2.touch and write new user_data file 
+3.mount disk-config
+4.cp all data to tmpdir
+5.cover new user_data file to tmpdir
+6.use genisoimage to produce a iso file
+7.cover new iso file to disk-config 
+8.use libvirt command to reattach disk-config
+9.umount disk-config
+10.delete disk-config backup file
+11.delete all tmpfile
+"""
+def _chg_win_pwd(id, name, pwd_, serial):
+    dir = TOP_DIR + id + '/'
+
+    if not _mk_tmp_dir(dir):
+       LOG = "Failed, mkdir tmp dir error!"
+       return False, LOG
+
+    if not _create_bak_file(id, dir):
+       LOG = "Failed, create disk_config bakup file error!"
+       return False, LOG
+
+    if not _touch_new_userdata(dir, pwd_, serial):
+       LOG = "Failed, touch and write new user_data file error!"
+       return False, LOG    
+
+    if not _mount_disk_config(id, dir):
+       LOG = "Failed, mount disk-config error!"
+       return False, LOG
+    
+    if not _copy_all_data(dir):
+       LOG = "Failed, cp all data to tmpdir error!"
+       return False, LOG
+    
+    if not _cover_user_data(dir):
+       LOG = "Failed, cover new user_data file to tmpdir error!"
+       return False, LOG
+    
+    if not _make_new_iso(dir):
+       LOG = "Failed, use genisoimage to produce a iso file error!"
+       return False, LOG
+    
+    if not _cover_disk_config(id, dir):
+       LOG = "Failed, cover new iso file to disk-config error!"
+       return False, LOG
+
+    if not _reattach_disk_config(id, name):
+       LOG = "Failed, use libvirt command to reattach disk-config error!"
+       return False, LOG
+       
+    if not _umount_disk_config(dir):
+       LOG = "Failed, umount disk-config error!"
+       return False, LOG
+
+    if not _delete_bak_file(id, dir):
+       LOG = 'Failed, delete disk-config backup file error!'
+       return False, LOG
+
+    if not _delete_tmp_files(dir):
+       LOG = "Failed, delete all tmpfile error!"
+       return False, LOG
+     
+    LOG = 'wait 20s change windows passwd will success!'
+    return True, LOG
+    
+def _mk_tmp_dir(dir):
+    try:
+        os.mkdir(dir)
+        mnt_dir = dir + 'mnt'
+        iso_dir = dir + 'iso'
+        os.mkdir(mnt_dir)
+        os.mkdir(iso_dir)
+    except Exception,ex:
+        return False
+    return True
+    
+def _touch_new_userdata(dir, pwd_, serial):
+    try:
+        data_str = USERDATA_SAMPLE % (pwd_, serial)
+        user_data_file = dir + 'user_data'
+        os.popen('touch %s' % user_data_file)
+        with open(user_data_file, 'w') as f:
+            f.write(data_str)
+        os.popen('chmod 444 %s' % user_data_file)
+    except Exception,ex:
+        return False
+    return True
+
+def _create_bak_file(id, dir):
+    try:
+        disk_config = DISK_CONFIG % id
+        disk_bak = disk_config + '.bakfile'
+        os.popen('cp %s %s' %(disk_config, disk_bak))
+    except Exception,ex:
+        return False
+    return True
+
+
+def _mount_disk_config(id, dir):
+    try:
+        disk_config = DISK_CONFIG % id
+        mnt_dir = dir + 'mnt'
+        os.popen('mount -o loop,ro %s %s' %(disk_config, mnt_dir))
+    except Exception,ex:
+        return False
+    return True
+
+def _copy_all_data(dir):
+    try:
+        mnt_dir = dir + 'mnt'
+        iso_dir = dir + 'iso'
+        os.popen('cp -r %s/* %s' % (mnt_dir, iso_dir))
+    except Exception,ex:
+        return False
+    return True
+
+def _cover_user_data(dir):
+    try:
+        user_data_file = dir + 'user_data'
+        iso_dir = dir + 'iso'
+        os.popen('rm -f %s/openstack/latest/user_data' % iso_dir)
+        os.popen('cp %s %s/openstack/latest/' %(user_data_file, iso_dir))             
+    except Exception,ex:
+        return False
+    return True
+
+def _make_new_iso(dir):
+    try:
+        iso_file = dir + 'disk.config'
+        iso_dir = dir + 'iso/'
+        os.popen('genisoimage -o %s -ldots -allow-lowercase -allow-multidot -l \
+                 -publisher aaa -quiet -J -r -V config-2 %s 2>&1' % (iso_file, iso_dir))
+    except Exception,ex:
+        return False
+    return True
+
+def _cover_disk_config(id, dir):
+    try:
+        iso_file = dir + 'disk.config'
+        disk_config_file = DISK_CONFIG % id
+        os.popen('chown qemu:qemu %s' % iso_file)
+        os.popen('rm -f %s' % disk_config_file)
+        os.popen('cp %s %s' % (iso_file, disk_config_file))
+    except Exception,ex:
+        return False
+    return True
+
+    
+def _reattach_disk_config(id, name):
+    try:
+        disk_config_file = DISK_CONFIG % id
+        os.popen('virsh attach-disk %s %s hdd --type cdrom' % (name, disk_config_file))
+    except Exception,ex:
+        return False
+    return True
+
+def _umount_disk_config(dir):
+    try:
+        mnt_dir = dir + 'mnt'
+        os.popen('umount %s 2>&1' % mnt_dir)
+    except Exception,ex:
+        return False
+    return True
+
+def _delete_tmp_files(dir):
+    try:
+        os.popen('rm -fr %s' % dir)
+    except Exception,ex:
+        return False
+    return True
+
+def _delete_bak_file(id, dir):
+    try:
+        disk_config = DISK_CONFIG % id
+        disk_bak = disk_config + '.bakfile'
+        os.popen('rm -fr %s' % disk_bak)
+    except Exception,ex:
+        return False
+    return True
+
+def _handle_exception(id):
+    try:
+        dir = TOP_DIR + id + '/'
+        _umount_disk_config(dir)
+        _delete_tmp_files(dir)
+        _delete_bak_file(id, dir)
+    except Exception,ex:
+        return False
+    return True
+
+if __name__ == "__main__":
+    chg_win_pwd(instance_name, instance_user_data)
+

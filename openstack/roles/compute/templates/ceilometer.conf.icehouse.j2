@@ -1,0 +1,48 @@
+[DEFAULT]
+glance_control_exchange=glance
+debug=False
+verbose=True
+log_dir=/var/log/ceilometer
+notification_topics=notifications,glance_notifications
+rpc_backend=ceilometer.openstack.common.rpc.impl_kombu
+os_auth_url=http://{{os_keystone}}:35357/v2.0
+metering_secret=674fdad3c6674efa
+os_tenant_name=services
+os_username=ceilometer
+os_password=4771108d1de84b0c
+rabbit_host = {{os_rabbitmq}}
+rabbit_port = 5672
+os_region_name = {{os_region}}
+auth_strategy = keystone
+[publisher_rpc]
+[ssl]
+[database]
+connection=mongodb://{{os_mongodb}}:27017/ceilometer
+[alarm]
+partition_rpc_topic=alarm_partition_coordination
+evaluation_interval=60
+evaluation_service=ceilometer.alarm.service.SingletonAlarmService
+record_history=True
+[rpc_notifier2]
+[api]
+[service_credentials]
+os_auth_url = http://{{os_keystone}}:5000/v2.0
+os_username = ceilometer
+os_tenant_name = services
+os_password = 4771108d1de84b0c
+os_region_name = {{os_region}}
+[dispatcher_file]
+[keystone_authtoken]
+auth_host={{os_keystone}}
+auth_port=35357
+auth_protocol=http
+auth_uri=http://{{os_keystone}}:5000/v2.0
+admin_user=ceilometer
+admin_password=4771108d1de84b0c
+admin_tenant_name=services
+auth_version = 2.0
+[collector]
+[matchmaker_ring]
+[matchmaker_redis]
+[publisher]
+metering_secret = 674fdad3c6674efa

@@ -1,0 +1,11 @@
+[DEFAULT]
+debug = False
+interface_driver =neutron.agent.linux.interface.BridgeInterfaceDriver
+use_namespaces = True
+handle_internal_only_routers = True
+external_network_bridge = 
+metadata_port = 9697
+send_arp_for_ha = 3
+periodic_interval = 40
+periodic_fuzzy_delay = 5
+enable_metadata_proxy = True

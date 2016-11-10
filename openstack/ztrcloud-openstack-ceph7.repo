@@ -1,0 +1,71 @@
+[base]
+name=CentOS-7 - Base
+baseurl=http://mirrors.ztrcloud.com/centos/7/os/$basearch/
+gpgcheck=0
+gpgkey=http://mirrors.ztrcloud.com/centos/RPM-GPG-KEY-CentOS-7
+
+[extras]
+name=CentOS-7 - Extras
+baseurl=http://mirrors.ztrcloud.com/centos/7/extras/$basearch/
+gpgcheck=0
+gpgkey=http://mirrors.ztrcloud.com/centos/RPM-GPG-KEY-CentOS-7
+
+[updates]
+name=CentOS-7 - updates
+baseurl=http://mirrors.ztrcloud.com/centos/7/updates/$basearch/
+gpgcheck=0
+gpgkey=http://mirrors.ztrcloud.com/centos/RPM-GPG-KEY-CentOS-7
+
+[epel]
+name=Extra Packages for Enterprise Linux 7 - $basearch 
+baseurl=http://mirrors.ztrcloud.com/epel/7/$basearch
+failovermethod=priority
+enabled=0
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+
+[openstack-kilo]
+name=OpenStack kilo Repository
+baseurl=http://mirrors.ztrcloud.com/repos/openstack/openstack-kilo/el7/
+enabled=1
+skip_if_unavailable=0
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno
+
+[ztrcloud-epel]
+name=Extra Packages for Enterprise Linux 7 - $basearch 
+baseurl=http://mirrors.ztrcloud.com/epel/7/$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+
+[puppetlabs-products]
+name=Puppet Labs Products El 7 - $basearch  
+baseurl=http://mirrors.ztrcloud.com/el/7/products/$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs
+enabled=1
+gpgcheck=0
+
+[puppetlabs-deps]
+name=Puppet Labs Dependencies El 7 - $basearch 
+baseurl=http://mirrors.ztrcloud.com/el/7/dependencies/$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs
+enabled=1
+gpgcheck=0
+
+[ceph]
+name=Ceph packages for $basearch
+baseurl=http://mirrors.ztrcloud.com/rpm-hammer/el7/$basearch
+enabled=1
+gpgcheck=0
+type=rpm-md
+gpgkey=https://mirrors.ztrcloud.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc
+
+[ceph-noarch]
+name=Ceph noarch packages
+baseurl=http://mirrors.ztrcloud.com/rpm-hammer/el7/noarch
+enabled=1
+gpgcheck=0
+type=rpm-md
+gpgkey=https://mirrors.ztrcloud.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc

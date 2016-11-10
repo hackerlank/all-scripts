@@ -1,0 +1,83 @@
+import os
+import sys
+import json
+import base64
+import crypt
+import string
+import random
+import re
+
+if len(sys.argv)<3:
+    print('Pls input argument instance password.')
+    sys.exit(1)
+
+instance=sys.argv[1]
+pwd_=sys.argv[2]
+
+FILE_OPEN_READ="""{"execute":"guest-file-open", "arguments":{"path":"%s","mode":"r"}}"""
+
+FILE_OPEN_WRITE="""{"execute":"guest-file-open", "arguments":{"path":"%s","mode":"w+"}}"""
+
+FILE_READ="""{"execute":"guest-file-read", "arguments":{"handle":%s,"count":%d}}"""
+
+FILE_WRITE="""{"execute":"guest-file-write", "arguments":{"handle":%s,"buf-b64":"%s"}}"""
+
+FILE_CLOSE="""{"execute":"guest-file-close", "arguments":{"handle":%s}}"""
+
+def EXE(param):
+    cmd="""virsh qemu-agent-command %s '%s' """ % (instance,param)
+    #print "Exe command:%s" % cmd
+    stream=os.popen(cmd).read()
+    return None if not stream else json.loads(stream)
+
+def guestFileRead(path):
+    file_handle=-1
+    try:
+        file_handle=EXE(FILE_OPEN_READ % path)["return"]
+        file_content=EXE(FILE_READ % (file_handle,1024000))["return"]["buf-b64"]
+    except Exception,ex:
+        print Exception,":",ex
+        return None
+    finally:
+        EXE(FILE_CLOSE % file_handle)
+    return file_content
+
+def guestFileWrite(path,content):
+    file_handle=-1
+    try:
+        file_handle=EXE(FILE_OPEN_WRITE % path)["return"]
+        write_count=EXE(FILE_WRITE % (file_handle,content))["return"]["count"]
+    except Exception,ex:
+        print Exception,":",ex
+        return -1
+    finally:
+        EXE(FILE_CLOSE % file_handle)
+    return write_count
+
+def genPwd(pwd):
+    salt=''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+    return crypt.crypt(pwd, "$6$%s" % salt)
+
+def resetPwd(path,pwd):
+    content=base64.standard_b64decode(guestFileRead(path))
+    #print "Read file content:%s" % content
+    user_array=re.split("\n",content)
+    for i,line in enumerate(user_array):
+        info=line.split(":")
+        if info[0]=="root":
+            info[1]=genPwd(pwd)
+            user_array[i]=":".join(info)
+            #print "After change,user info:%s" % user_array[i]
+            break
+    content=base64.standard_b64encode("\n".join(user_array)) 
+    write_count=guestFileWrite(path,content)
+    print write_count>0
+
+if __name__ == "__main__":
+    pwd_str = base64.urlsafe_b64decode(pwd_) 
+    resetPwd("/etc/shadow",pwd_str)
+    #resetPwd("/etc/shadow",pwd_)
+   
+#content=guestFileRead("/etc/passwd")count
+#count=guestFileWrite("/tmp/test","SW1hZ2luZSBhIHdvcmxkIHlvdSBjYW4gZmx5")
+#print count

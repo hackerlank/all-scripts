@@ -1,0 +1,82 @@
+[DEFAULT]
+os_region_name = beijing
+my_ip =172.28.2.34
+glance_api_servers=http://172.28.0.250:9292
+metadata_host=172.28.0.250
+neutron_url=http://172.28.0.250:9696
+neutron_region_name=beijing
+neutron_admin_auth_url=http://172.30.250.101:35357/v2.0
+rabbit_host=172.28.2.247
+novncproxy_base_url=http://61.135.213.62:6080/vnc_auto.html
+vncserver_proxyclient_address=172.28.2.34
+sql_connection=mysql://nova@172.28.2.7/nova
+
+debug=False
+verbose=True
+use_syslog=False
+state_path=/var/lib/nova
+service_down_time=60
+instance_usage_audit_period=hour
+rootwrap_config=/etc/nova/rootwrap.conf
+auth_strategy=keystone
+neutron_default_tenant_id=default
+instance_usage_audit=True
+network_api_class=nova.network.neutronv2.api.API
+neutron_url_timeout=60
+neutron_admin_username=neutron
+neutron_admin_password=NanHui_Cloud@PWXneutron
+neutron_admin_tenant_name=services
+neutron_auth_strategy=keystone
+neutron_ovs_bridge=br-int
+neutron_extension_sync_interval=600
+security_group_api=neutron
+lock_path=/var/lib/nova/tmp
+rpc_backend=nova.openstack.common.rpc.impl_kombu
+rabbit_port=5672
+compute_driver=libvirt.LibvirtDriver
+firewall_driver=nova.virt.firewall.NoopFirewallDriver
+libvirt_type=kvm
+libvirt_inject_partition=-2
+libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtGenericVIFDriver
+libvirt_use_virtio_for_bridges=True
+vncserver_listen=0.0.0.0
+vnc_enabled=True
+volume_api_class=nova.volume.cinder.API
+image_service=nova.image.glance.GlanceImageService
+logdir=/var/log/nova
+connection_type=libvirt
+notify_on_state_change = vm_and_task_state
+libvirt_images_type = rbd
+libvirt_images_rbd_pool = images
+libvirt_images_rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_user = cinder
+rbd_secret_uuid = 62b1ed02-5de2-4a53-be1e-0477d1b385ae
+libvirt_inject_password = true
+libvirt_inject_key = true
+force_config_drive = true
+config_drive_inject_password = true
+net_config_template = /nova/virt/interfaces.template
+allow_resize_to_same_host = True
+disk_cachemodes = "network=writeback"
+image_cache_manager_interval = 0
+live_migration_flag = VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_UNSAFE
+vif_plugging_is_fatal = False
+vif_plugging_timeout = 0
+[hyperv]
+[zookeeper]
+[osapi_v3]
+[conductor]
+[keymgr]
+[cells]
+[database]
+[image_file_url]
+[baremetal]
+[rpc_notifier2]
+[matchmaker_redis]
+[ssl]
+[trusted_computing]
+[upgrade_levels]
+[matchmaker_ring]
+[vmware]
+[spice]
+[keystone_authtoken]

@@ -1,0 +1,10 @@
+[vlans]
+tenant_network_type = vlan
+network_vlan_ranges = {{CONFIG_NEUTRON_ML2_FLAT_NETWORKS}}
+[linux_bridge]
+physical_interface_mappings ={{CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS}}
+[vxlan]
+enable_vxlan = False
+[agent]
+polling_interval = 2
+[securitygroup]

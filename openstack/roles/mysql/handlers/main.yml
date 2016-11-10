@@ -1,0 +1,6 @@
+---
+  - name: start mysql
+    shell: service mysqld start
+
+  - name: enable mysql
+    shell: chkconfig mysqld on

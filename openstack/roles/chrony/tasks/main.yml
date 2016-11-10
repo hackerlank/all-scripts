@@ -1,0 +1,12 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+      - chrony
+
+  - name: Sync config files
+    template: src={{item}}.j2 dest=/etc/{{item}} backup=yes owner=root group=root mode=0644
+    with_items:
+      - chrony.conf
+    notify:
+      - enable chrony

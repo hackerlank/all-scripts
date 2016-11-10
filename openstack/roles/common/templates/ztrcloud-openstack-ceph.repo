@@ -1,0 +1,72 @@
+[base]
+name=CentOS-{{ansible_distribution_major_version}} - Base
+baseurl=http://mirrors.ztrcloud.com/centos/{{ansible_distribution_major_version}}/os/$basearch/
+gpgcheck=0
+gpgkey=http://mirrors.ztrcloud.com/centos/RPM-GPG-KEY-CentOS-{{ansible_distribution_major_version}}
+
+[extras]
+name=CentOS-{{ansible_distribution_major_version}} - Extras
+baseurl=http://mirrors.ztrcloud.com/centos/{{ansible_distribution_major_version}}/extras/$basearch/
+gpgcheck=0
+gpgkey=http://mirrors.ztrcloud.com/centos/RPM-GPG-KEY-CentOS-{{ansible_distribution_major_version}}
+
+[updates]
+name=CentOS-{{ansible_distribution_major_version}} - updates
+baseurl=http://mirrors.ztrcloud.com/centos/{{ansible_distribution_major_version}}/updates/$basearch/
+gpgcheck=0
+gpgkey=http://mirrors.ztrcloud.com/centos/RPM-GPG-KEY-CentOS-{{ansible_distribution_major_version}}
+
+[epel]
+name=Extra Packages for Enterprise Linux {{ansible_distribution_major_version}} - $basearch 
+baseurl=http://mirrors.ztrcloud.com/epel/{{ansible_distribution_major_version}}/$basearch
+failovermethod=priority
+enabled=0
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ansible_distribution_major_version}}
+
+[openstack-{{os_version}}]
+name=OpenStack {{os_version}} Repository
+baseurl=http://mirrors.ztrcloud.com/repos/openstack/openstack-{{os_version}}/el{{ansible_distribution_major_version}}/
+enabled=1
+skip_if_unavailable=0
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno
+
+[ztrcloud-epel]
+name=Extra Packages for Enterprise Linux {{ansible_distribution_major_version}} - $basearch 
+baseurl=http://mirrors.ztrcloud.com/epel/{{ansible_distribution_major_version}}/$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ansible_distribution_major_version}}
+
+[puppetlabs-products]
+name=Puppet Labs Products El {{ansible_distribution_major_version}} - $basearch  
+baseurl=http://mirrors.ztrcloud.com/el/{{ansible_distribution_major_version}}/products/$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs
+enabled=1
+gpgcheck=0
+
+[puppetlabs-deps]
+name=Puppet Labs Dependencies El {{ansible_distribution_major_version}} - $basearch 
+baseurl=http://mirrors.ztrcloud.com/el/{{ansible_distribution_major_version}}/dependencies/$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs
+enabled=1
+gpgcheck=0
+
+[ceph]
+name=Ceph packages for $basearch
+baseurl=http://mirrors.ztrcloud.com/rpm-{{ceph_version}}/el{{ansible_distribution_major_version}}/$basearch
+enabled=1
+gpgcheck=0
+type=rpm-md
+gpgkey=https://mirrors.ztrcloud.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc
+priority=98
+
+[ceph-noarch]
+name=Ceph noarch packages
+baseurl=http://mirrors.ztrcloud.com/rpm-firefly/el{{ansible_distribution_major_version}}/noarch
+enabled=1
+gpgcheck=0
+type=rpm-md
+gpgkey=https://mirrors.ztrcloud.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc

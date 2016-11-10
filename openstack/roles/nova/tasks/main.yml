@@ -1,0 +1,24 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+      - openstack-nova-cert
+      - openstack-nova-common
+      - openstack-nova-console
+      - openstack-nova-conductor
+      - python-nova
+      - python-novaclient
+      - openstack-nova-scheduler
+      - openstack-nova-novncproxy
+      - openstack-nova-api
+
+  - name: Sync config files
+    template: src={{item[0]}}.j2 dest=/etc/{{item[1]}}/{{item[0]}} backup=yes owner=nova group=nova mode=0640
+    with_together:
+      - [ 'nova.conf']
+      - [ 'nova' ]
+    notify:
+      - enable nova
+   
+   - name: create nova
+     script: python nova.py

@@ -1,0 +1,12 @@
+[ml2]
+mechanism_drivers = linuxbridge,openvswitch
+type_drivers = flat,vlan
+tenant_network_types = flat,vlan
+[ml2_type_flat]
+flat_networks = {{os_flat_net}} 
+[ml2_type_vlan]
+network_vlan_ranges = {{os_net_map}}
+[ml2_type_gre]
+[ml2_type_vxlan]
+[securitygroup]
+firewall_driver = dummy_value_to_enable_security_groups_in_server

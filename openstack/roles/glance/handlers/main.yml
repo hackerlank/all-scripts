@@ -1,0 +1,14 @@
+---
+  - name: start glance
+    shell: systemctl restart {{item}}
+    with_items:
+      - openstack-glance-api
+      - openstack-glance-registry
+    when: ansible_distribution_major_version|int == 7
+
+  - name: enable glance
+    shell: systemctl enable {{item}}
+    with_items:
+      - openstack-glance-api
+      - openstack-glance-registry
+    when: ansible_distribution_major_version|int == 7

@@ -1,0 +1,28 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+      - python-glance
+      - openstack-glance
+
+  - name: Sync config files
+    template: src={{item}}.j2 dest=/etc/glance/{{item}} backup=yes owner=glance group=glance mode=0640
+    with_items:
+      - [ 'glance-api.conf']
+      - [ 'glance-registry.conf' ]
+    notify:
+      - enable glance
+
+  - name: generate ceph client keys
+    shell: ceph auth get-or-create client.{{item}} >/etc/ceph/ceph.client.{{item}}.keyring
+    ignore_errors: True
+    with_items:
+       - glance
+
+  - name: change ceph client key credentials
+    shell: chown glance. /etc/ceph/ceph.client.{{item}}.keyring
+    ignore_errors: True
+    with_items:
+       - glance
+  - name: create glance
+    script: python glance.py

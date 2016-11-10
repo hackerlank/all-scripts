@@ -1,0 +1,123 @@
+---
+# This play book deploys all OpenStack components in this site.
+
+# Configuration the /etc/hosts
+- hosts: all
+  vars:
+    region: "BJ"
+    os_region: "beijing"
+    os_version: "kilo"
+    ceph_version: "giant"
+    os_control: "172.28.0.250"
+    os_keystone: "172.30.250.101"
+    os_mysql: "172.28.2.247"
+    os_mongodb: "172.28.5.122"
+    os_rabbitmq: "172.28.2.247"
+    os_redis: "{{os_control}}"
+    os_novncproxy: '192.168.1.1'
+    ntp_servers: '172.27.0.35'
+    os_flat_net: "*"
+    os_net_map: "vlannet:bond0"
+    os_interface: "eth0"
+    os_domain_name: 'scloudm'
+    ansible_ssh_pass: "ZtGame@321EWQdsa"
+    CONFIG_KEYSTONE_ADMIN_TOKEN: '8fb30fe54e3a44658bda97ab18a0eb1d'
+    CONFIG_KEYSTONE_DB_PW: '27b580e37a6d42a5'
+    CONFIG_NOVA_DB_PW: '1c0da99bb46f4360'
+    CONFIG_NOVA_KS_PW: '1c6cfffd256f42d'
+    CONFIG_CINDER_DB_PW: 'c60b872f68494829'
+    CONFIG_CINDER_KS_PW: 'bed3d7ebe0b745cb'
+    CONFIG_GLANCE_DB_PW: '628e9e8b22264b19'
+    CONFIG_GLANCE_KS_PW: '9b1f15b4a9934214'
+    CONFIG_NEUTRON_DB_PW: '1c0da99bb46f4360'
+    CONFIG_NEUTRON_KS_PW: '0d776ce0280e4d4a'
+    CONFIG_CEILOMETER_KS_PW: '5ed00426b974489e'
+    CONFIG_MARIADB_HOST: "{{os_mysql}}"
+    CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS: "{{os_net_map}}"
+    CONFIG_NEUTRON_ML2_FLAT_NETWORKS: "{{os_flat_net}}"
+    CONFIG_NEUTRON_ML2_VLAN_RANGES: 'vlannet'
+
+  roles:
+    - { role: hosts }
+
+# Do OpenStack server system initialization. 
+- hosts: 10.240.51.19
+  vars:
+    region: "BJ"
+    os_region: "beijing"
+    os_version: "kilo"
+    ceph_version: "giant"
+    os_control: "172.28.0.250"
+    os_keystone: "10.240.51.16"
+    os_mysql: "172.28.2.247"
+    os_mongodb: "172.28.5.122"
+    os_rabbitmq: "172.28.2.247"
+    os_redis: "{{os_control}}"
+    os_novncproxy: '192.168.1.1'
+    os_flat_net: "*"
+    os_net_map: "vlannet:bond0"
+    os_interface: "eth0"
+    os_domain_name: 'scloudm'
+    ansible_ssh_pass: "ZtGame@321EWQdsa"
+    CONFIG_KEYSTONE_ADMIN_TOKEN: '8fb30fe54e3a44658bda97ab18a0eb1d'
+    CONFIG_KEYSTONE_DB_PW: '27b580e37a6d42a5'
+    CONFIG_NOVA_DB_PW: '1c0da99bb46f4360'
+    CONFIG_NOVA_KS_PW: '1c6cfffd256f42d'
+    CONFIG_CINDER_DB_PW: 'c60b872f68494829'
+    CONFIG_CINDER_KS_PW: 'bed3d7ebe0b745cb'
+    CONFIG_GLANCE_DB_PW: '628e9e8b22264b19'
+    CONFIG_GLANCE_KS_PW: '9b1f15b4a9934214'
+    CONFIG_NEUTRON_DB_PW: '1c0da99bb46f4360'
+    CONFIG_NEUTRON_KS_PW: '0d776ce0280e4d4a'
+    CONFIG_CEILOMETER_KS_PW: '5ed00426b974489e'
+    CONFIG_MARIADB_HOST: "{{os_mysql}}"
+    CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS: "{{os_net_map}}"
+    CONFIG_NEUTRON_ML2_FLAT_NETWORKS: "{{os_flat_net}}"
+    CONFIG_NEUTRON_ML2_VLAN_RANGES: 'vlannet'
+
+  roles:
+      - { role: common }
+      - { role: mysql }
+      - { role: chrony }
+      - { role: horizon }
+      - { role: keystone }
+      - { role: control }
+
+
+# Install OpenStack nova compute. 
+- hosts: 10.240.51.17
+  vars:
+    region: "BJ"
+    os_region: "beijing"
+    os_version: "kilo"
+    ceph_version: "giant"
+    os_control: "172.28.0.250"
+    os_keystone: "172.30.250.101"
+    os_mysql: "172.28.2.247"
+    os_mongodb: "172.28.5.122"
+    os_rabbitmq: "172.28.2.247"
+    os_redis: "{{os_control}}"
+    os_novncproxy: '192.168.1.1'
+    os_flat_net: "*"
+    os_net_map: "vlannet:bond0"
+    os_interface: "eth0"
+    os_domain_name: 'scloudm'
+    ansible_ssh_pass: "ZtGame@321EWQdsa"
+    CONFIG_KEYSTONE_ADMIN_TOKEN: '8fb30fe54e3a44658bda97ab18a0eb1d'
+    CONFIG_KEYSTONE_DB_PW: '27b580e37a6d42a5'
+    CONFIG_NOVA_DB_PW: '1c0da99bb46f4360'
+    CONFIG_NOVA_KS_PW: '1c6cfffd256f42d'
+    CONFIG_CINDER_DB_PW: 'c60b872f68494829'
+    CONFIG_CINDER_KS_PW: 'bed3d7ebe0b745cb'
+    CONFIG_GLANCE_DB_PW: '628e9e8b22264b19'
+    CONFIG_GLANCE_KS_PW: '9b1f15b4a9934214'
+    CONFIG_NEUTRON_DB_PW: '1c0da99bb46f4360'
+    CONFIG_NEUTRON_KS_PW: '0d776ce0280e4d4a'
+    CONFIG_CEILOMETER_KS_PW: '5ed00426b974489e'
+    CONFIG_MARIADB_HOST: "{{os_mysql}}"
+    CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS: "{{os_net_map}}"
+    CONFIG_NEUTRON_ML2_FLAT_NETWORKS: "{{os_flat_net}}"
+    CONFIG_NEUTRON_ML2_VLAN_RANGES: 'vlannet'
+
+  roles:
+      - { role: compute }

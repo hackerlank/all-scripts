@@ -1,0 +1,24 @@
+[DEFAULT]
+verbose=True
+debug=False
+bind_host = 0.0.0.0
+bind_port = 9191
+backlog = 4096
+sql_idle_timeout = 3600
+api_limit_max = 1000
+limit_param_default = 25
+use_syslog = False
+[keystone_authtoken]
+auth_host={{os_keystone}}
+auth_port=35357
+auth_protocol=http
+admin_tenant_name=services
+admin_user=glance
+admin_password=NanHui_Cloud@PWXglance
+auth_uri=http://{{os_keystone}}:5000
+auth_version = v2.0
+[paste_deploy]
+flavor=keystone
+
+[database]
+sql_connection = mysql://glance:{{os_passwd}}_Cloud-DB@PWXglance@{{os_mysql}}/glance

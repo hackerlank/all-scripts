@@ -1,0 +1,9 @@
+#---
+#  - name: Install Mysql
+#    yum: name:{{item}}
+#    with_items:
+#        - mariadb-server
+#    when: ansible_distribution_major_version|int == 7
+#    notify:
+#        - enable mariadb.service
+#        - start mariadb.service

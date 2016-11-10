@@ -1,0 +1,25 @@
+---
+  - name: Sync yum
+    template: src=ztrcloud-openstack-ceph.repo dest=/etc/yum.repos.d/ztrcloud-openstack-ceph.repo
+
+  - name: clean yum cache
+    shell: yum clean all
+
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+      - mysql-server
+
+  - name: Sync config files
+    template: src={{state}}.cnf dest=/etc/my.cnf backup=yes owner=root group=root mode=0644
+    notify:
+      - enable mysql
+
+  - name: config master 
+    script: master.sh
+    when: state == 'master'
+
+
+  - name: config slave 
+    script: slave.sh {{groups['master'][0]}} 
+    when: state == 'slave'

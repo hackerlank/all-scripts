@@ -1,0 +1,15 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+        - openstack-keystone
+        - python-openstackclient
+        - MySQL-python
+        - python-yaml
+
+  - name: Sync config files
+    template: src={{item}}.j2 dest=/etc/keystone/{{item}} backup=yes owner=keystone group=keystone mode=0640
+    with_items:
+        - keystone.conf
+    notify:
+        - enable keystone

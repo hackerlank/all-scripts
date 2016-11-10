@@ -1,0 +1,4 @@
+---
+    region: "BJ"
+    os_interface: "eth0"
+    ansible_ssh_pass: "ZtGame@321EWQdsa"

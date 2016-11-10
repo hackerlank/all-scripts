@@ -1,0 +1,33 @@
+---
+- name: OpenStack install keystone
+  hosts: 10.240.51.18
+  vars:
+    region: "PBS"
+    os_version: "kilo"
+    ceph_version: "giant"
+    os_region: "pengboshi01"
+    os_passwd: "Pengboshi"
+    os_control: "172.28.0.250"
+    os_keystone: "172.30.250.101"
+    os_mysql: "10.240.51.16"
+    os_mongodb: "172.28.5.122"
+    os_rabbitmq: "172.28.2.247"
+    os_interface: "eth0"
+    ntp_servers: "192.168.1.1"
+    os_flat_net: "*"
+    os_net_map: "vlannet:bond0"
+    # ansible_ssh_pass: "Mf3A+8NVK^K0~TdXt!e"
+    CONFIG_KEYSTONE_ADMIN_TOKEN: '8fb30fe54e3a44658bda97ab18a0eb1d'
+    CONFIG_KEYSTONE_DB_PW: '27b580e37a6d42a5'
+    CONFIG_MARIADB_HOST: "{{os_mysql}}" 
+  pre_tasks:
+    - shell: echo 'hello'
+
+  roles:
+    - { role: horizon }
+
+  tasks:
+    - shell: echo 'still busy'
+
+  post_tasks:
+    - shell: echo "ok"

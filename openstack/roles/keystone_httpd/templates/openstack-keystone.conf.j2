@@ -1,0 +1,28 @@
+NameVirtualHost *:5000
+Listen 5000
+<VirtualHost *:5000>
+    WSGIDaemonProcess keystone-main user=keystone group=keystone processes=10 threads=2
+    WSGIScriptAlias / /var/www/cgi-bin/keystone/main
+
+    <Directory /var/www/cgi-bin/keystone>
+        WSGIProcessGroup keystone-main
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+
+NameVirtualHost *:35357
+Listen 35357
+<VirtualHost *:35357>
+    WSGIDaemonProcess keystone-admin user=keystone group=keystone processes=10 threads=2
+    WSGIScriptAlias / /var/www/cgi-bin/keystone/admin
+
+    <Directory /var/www/cgi-bin/keystone>
+        WSGIProcessGroup keystone-admin
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>

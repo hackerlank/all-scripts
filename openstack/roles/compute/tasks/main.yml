@@ -1,0 +1,85 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+        - python-ceilometerclient
+        - openstack-ceilometer-compute
+        - openstack-nova-compute
+        - openstack-neutron-ml2
+        - openstack-neutron-linuxbridge
+        - openstack-neutron
+
+  - name: Install Ceph Packets 
+    shell: yum install -y ceph --skip-broken
+
+  - name: Sync nova config files
+    template: src={{item[0]}}.j2 dest=/etc/{{item[1]}}/{{item[0]}} backup=yes owner=nova group=nova mode=0640
+    with_together:
+        - [ 'nova.conf']
+        - [ 'nova' ]
+    notify:
+        - enable compute
+
+  - name: Sync neutron config files
+    template: src={{item}}.j2 dest=/etc/neutron/{{item}} backup=yes owner=neutron group=neutron mode=0640
+    with_items:
+        - [ 'plugins/ml2/ml2_conf.ini' ]
+        - [ 'plugins/linuxbridge/linuxbridge_conf.ini' ]
+        - [ 'neutron.conf']
+
+  - name: Sync ceilomiter files
+    template: src={{item}}.j2 dest=/etc/ceilometer/{{item}} backup=yes owner=ceilometer group=ceilometer mode=0755
+    with_items:
+        - ceilometer.conf
+
+  - name: ensure dir
+    shell: mkdir -p /opt/minion/extmods/modules/
+
+  - name: sync extra utils
+    synchronize: src={{item}} dest=/opt/minion/extmods/modules/{{item}}
+    with_items:
+        - chg_pwd
+        - bandwith_limit.sh
+        - get_volume_root_image
+        - chg_win_pwd
+
+  - name: sync ceph files
+    template: src={{item}} dest=/etc/ceph/{{item}} backup=yes owner=root group=root mode=0644
+    with_items:
+        - ceph.client.admin.keyring
+        - ceph.conf
+
+  - name: change_libvirtd_nofile_limit
+    ini_file: dest=/etc/systemd/system/multi-user.target.wants/libvirtd.service
+              section=Service
+              option=LimitNOFILE
+              value=65535
+              backup=yes
+    notify:
+        - restart libvirtd
+
+  - name: Integrate ceph and nova
+    script: nova_compute.sh
+
+  - name: generate ceph client keys
+    shell: ceph auth get-or-create client.{{item}} >/etc/ceph/ceph.client.{{item}}.keyring
+    ignore_errors: True
+    with_items:
+       - glance
+       - cinder
+
+  - name: change ceph client key credentials
+    shell: chown glance. /etc/ceph/ceph.client.{{item}}.keyring
+    ignore_errors: True
+    with_items:
+       - glance
+       - cinder
+
+  - name: reload systemd
+    shell: systemctl daemon-reload
+    when: ansible_distribution_major_version|int == 7
+
+  - name: restart libvirtd
+    shell: systemctl daemon-reload
+    when: ansible_distribution_major_version|int == 7
+

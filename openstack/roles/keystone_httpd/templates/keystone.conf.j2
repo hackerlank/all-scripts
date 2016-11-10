@@ -1,0 +1,66 @@
+[DEFAULT]
+admin_token = {{CONFIG_KEYSTONE_ADMIN_TOKEN}}
+debug = False
+verbose = True
+log_dir = /var/log/keystone
+use_syslog = False
+public_port=5000
+public_workers=4
+admin_workers=4
+admin_bind_host=0.0.0.0
+public_bind_host=0.0.0.0
+admin_port=35357
+[assignment]
+[auth]
+[cache]
+[catalog]
+template_file = /etc/keystone/default_catalog.templates
+driver = keystone.catalog.backends.sql.Catalog
+[credential]
+[database]
+connection = mysql://keystone_admin:{{CONFIG_KEYSTONE_DB_PW}}@{{os_mysql}}/keystone
+idle_timeout = 200
+[domain_config]
+[endpoint_filter]
+[endpoint_policy]
+[eventlet_server]
+[eventlet_server_ssl]
+[federation]
+[fernet_tokens]
+key_repository = /etc/keystone/fernet-keys
+[identity]
+[identity_mapping]
+[kvs]
+[ldap]
+[matchmaker_redis]
+[matchmaker_ring]
+[memcache]
+[oauth1]
+[os_inherit]
+[oslo_messaging_amqp]
+[oslo_messaging_qpid]
+[oslo_messaging_rabbit]
+[oslo_middleware]
+[oslo_policy]
+[paste_deploy]
+config_file=/usr/share/keystone/keystone-dist-paste.ini
+[policy]
+[resource]
+[revoke]
+driver = keystone.contrib.revoke.backends.sql.Revoke
+[role]
+[saml]
+[signing]
+certfile = /etc/keystone/ssl/certs/signing_cert.pem
+keyfile = /etc/keystone/ssl/private/signing_key.pem
+ca_certs = /etc/keystone/ssl/certs/ca.pem
+ca_key = /etc/keystone/ssl/private/cakey.pem
+key_size = 2048
+cert_subject = /C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com
+[ssl]
+enable=False
+[token]
+expiration = 86400
+provider = keystone.token.providers.uuid.Provider
+driver = keystone.token.persistence.backends.sql.Token
+[trust]

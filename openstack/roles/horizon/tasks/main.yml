@@ -1,0 +1,22 @@
+---
+  - name: Install Packets
+    yum: name={{item}}
+    with_items:
+        - openstack-dashboard
+        - httpd
+        - mod_wsgi
+        - memcached
+        - python-memcached
+
+  - name: Sync config files
+    template: src={{item}}.j2 dest=/etc/openstack-dashboard/{{item}} backup=yes owner=root group=root mode=0644
+    with_items:
+        - local_settings
+    notify:
+        - enable horizon
+
+  - name: create horizon.log 
+    shell: touch /var/log/horizon/horizon.log
+
+  - name: change privileges 
+    shell: chown  apache. /var/log/horizon/horizon.log

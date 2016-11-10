@@ -1,0 +1,22 @@
+---
+  - name: start nova
+    shell: systemctl restart {{item}}
+    with_items:
+      - openstack-nova-conductor
+      - openstack-nova-api
+      - openstack-nova-scheduler
+      - openstack-nova-novncproxy
+      - openstack-nova-consoleauth
+      - openstack-nova-cert
+    when: ansible_distribution_major_version|int == 7
+
+  - name: enable nova
+    shell: systemctl enable {{item}}
+    with_items:
+      - openstack-nova-conductor
+      - openstack-nova-api
+      - openstack-nova-scheduler
+      - openstack-nova-novncproxy
+      - openstack-nova-consoleauth
+      - openstack-nova-cert
+    when: ansible_distribution_major_version|int == 7

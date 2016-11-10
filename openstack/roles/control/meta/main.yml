@@ -1,0 +1,8 @@
+---
+dependencies:
+    - { role: common }
+    - { role: nova }
+    - { role: cinder }
+    - { role: glance }
+    - { role: ceilometer }
+    - { role: neutron }

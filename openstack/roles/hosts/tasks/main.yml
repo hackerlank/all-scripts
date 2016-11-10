@@ -1,0 +1,3 @@
+---
+  - name: Change system hosts
+    template: src=hosts dest=/etc/hosts backup=yes owner=root group=root mode=0644
